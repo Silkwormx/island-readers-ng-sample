@@ -187,7 +187,7 @@
       finish() { complete(); }
     };
     function complete() {
-      const stars = (L.id === 'intro' || L.id === 'heart') ? 3 : mistakes <= 1 ? 3 : mistakes <= 3 ? 2 : 1;
+      const stars = (L.id === 'listen' || L.id === 'intro') ? 3 : mistakes <= 1 ? 3 : mistakes <= 3 ? 2 : 1;
       const prev = S.lessons[L.id] || {};
       S.lessons[L.id] = { done: true, stars: Math.max(prev.stars || 0, stars), tries: (prev.tries || 0) + 1 };
       IR.touchStreak(); IR.save();

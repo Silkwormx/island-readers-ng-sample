@@ -12,6 +12,10 @@ HOW TO TRY IT
 3) Free hosting later (not done yet): upload this folder to a GitHub Pages repo (or Netlify Drop / Cloudflare Pages).
    It works from a sub-folder URL, because every path is relative. Needs https for install and offline.
 
+LESSON ORDER (Island 3, Stop 1): 1 Meet ng (the sound alone first, then ang/ing/ong/ung, then the words sang/sing/song/sung)
+-> 2 Story Time (heart-word peek, then the comic read aloud, listen only, no quiz) -> 3 Hear and Pick -> 4 Fish Pond
+-> 5 Build-a-Word -> 6 Trace Trail -> 7 Sentence Bridge -> 8 Now You Read It (comic, read it 3 times) -> Zip's Check.
+
 GROWN-UP CORNER: press and hold the gear button for about 1 second. There you can reset progress,
 turn on calm motion, open every lesson for testing, and play the isolated ng sound.
 

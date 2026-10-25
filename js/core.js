@@ -145,6 +145,7 @@
   const A = {
     word: (w) => 'audio/w_' + w + '.mp3',
     prompt: (id) => 'audio/p_' + id + '.mp3',
+    chunk: (c) => 'audio/' + c + '.mp3',
     ng: 'audio/ng.mp3'
   };
   const GOOD = ['g1', 'g2', 'g3', 'g4', 'g5'];

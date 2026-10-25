@@ -1,4 +1,4 @@
-/* Mini lessons 5-8: Trace Trail, Heart Words, Sentence Bridge, Comic Read-Along */
+/* Mini lessons 6-8: Trace Trail, Sentence Bridge, Now You Read It (comic). Heart words now live in Story Time (lesson 1). */
 (function () {
   'use strict';
   const IR = window.IR;
@@ -82,36 +82,6 @@
     }
   });
 
-  /* ---------- 6. Heart Word Flash ---------- */
-  LESSONS.push({
-    id: 'heart', title: 'Heart Words', blurb: 'Words we just know by heart', color: '#E0457B',
-    run(ctx) {
-      ctx.setInstr('Say each heart word. Then tap how it felt.', 'p_heart');
-      const stage = ctx.stage; const S = IR.S();
-      const queue = D.heart.map((x) => x.w); let seen = 0; const total = queue.length; const retried = {};
-      function card() {
-        const w = queue[0]; const item = D.heart.find((x) => x.w === w);
-        ctx.progress(seen / total); stage.innerHTML = '';
-        const ex = item.ex.split(/(\s+)/).map((t) => (t.replace(/[^A-Za-z]/g, '').toLowerCase() === w.toLowerCase() ? h('mark', null, t) : t));
-        const spk = speakerBtn(() => Snd.seq([A.word(w), 'audio/hx_' + w + '.mp3'], 250), 'Hear the word and a sentence');
-        const easy = h('button', { class: 'btn big good', type: 'button' }, icon('check'), 'I know it!');
-        const tricky = h('button', { class: 'btn big warm', type: 'button' }, 'Tricky. Show me again');
-        const next = async (kind) => {
-          S.heart[w] = kind; IR.save(); queue.shift();
-          if (kind === 'tricky' && !retried[w]) { retried[w] = 1; queue.push(w); } else seen++;
-          await say(kind === 'easy' ? 'heartyes' : 'hearttricky'); if (!ctx.scr.ok()) return;
-          if (queue.length) card(); else { ctx.progress(1); ctx.finish(); }
-        };
-        easy.addEventListener('click', () => next('easy')); tricky.addEventListener('click', () => next('tricky'));
-        stage.append(h('div', { class: 'activity heartcard' },
-          h('div', { class: 'hw' }, h('span', { class: 'heartmark', 'aria-hidden': 'true' }, '\u2665'), h('span', { class: 'word' }, w)),
-          spk, h('p', { class: 'example' }, ex), h('div', { class: 'row' }, easy, tricky)));
-        Snd.seq([A.word(w), 'audio/hx_' + w + '.mp3'], 250);
-      }
-      card();
-    }
-  });
-
   /* ---------- 7. Sentence Bridge ---------- */
   LESSONS.push({
     id: 'sentence', title: 'Sentence Bridge', blurb: 'Build a sentence, build a bridge', color: '#2E9E6B',
@@ -154,9 +124,9 @@
     }
   });
 
-  /* ---------- 8. Comic Read-Along ---------- */
+  /* ---------- 8. Now You Read It (comic read-along with the read-3-times tracker) ---------- */
   LESSONS.push({
-    id: 'story', title: 'Comic Read-Along', blurb: 'Zip and Frill: The Ring Thing', color: '#8E5BD6',
+    id: 'story', title: 'Now You Read It', blurb: 'Read the comic yourself, then read it 3 times', color: '#8E5BD6',
     run(ctx) {
       ctx.setInstr('Tap a speaker to hear a sentence. Then you read it!', 'p_story');
       const pages = D.story; let p = 0; let reached = 0; const stage = ctx.stage; let auto = false; const S = IR.S();

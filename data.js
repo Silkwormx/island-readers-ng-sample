@@ -676,13 +676,21 @@ window.IR_DATA = {
    "voice": "Zip",
    "text": "Put a finger on your nose. Hum the sound. Feel the buzz?"
   },
+  "i5b": {
+   "voice": "Zip",
+   "text": "Feel your tongue. The back of it lifts up, and the sound hums out of your nose."
+  },
+  "v1": {
+   "voice": "Frill",
+   "text": "Here is a secret! You can put different vowels in front of ng. Each one makes a new glued sound. Tap each tile to hear it!"
+  },
   "i6": {
    "voice": "Frill",
-   "text": "ng hides at the end of words. Tap each one to hear it!"
+   "text": "Now we can read words that end with ng. Tap each one to hear it!"
   },
   "i7": {
    "voice": "Zip",
-   "text": "You can do it! Let's practice with Frill."
+   "text": "Great job with ng! Now let's listen to a story together."
   },
   "p_hear": {
    "voice": "Frill",
@@ -690,7 +698,7 @@ window.IR_DATA = {
   },
   "p_fish": {
    "voice": "Frill",
-   "text": "Tap the fish that have the N G hum. Listen to each word."
+   "text": "Tap the fish that have the ng hum. Listen to each word."
   },
   "p_build": {
    "voice": "Frill",
@@ -712,13 +720,25 @@ window.IR_DATA = {
    "voice": "Frill",
    "text": "Tap a speaker to hear a sentence. Then you read it!"
   },
+  "p_listen1": {
+   "voice": "Frill",
+   "text": "Here are heart words from our story. Tap each one to hear it."
+  },
+  "p_listen2": {
+   "voice": "Frill",
+   "text": "Now listen to the story. Just follow along with your eyes. You do not have to read yet!"
+  },
+  "listendone": {
+   "voice": "Frill",
+   "text": "What a fun story! Now let's practice the ng sound."
+  },
   "p_check": {
    "voice": "Zip",
    "text": "Time for Zip's check! Do your best. Take your time."
   },
   "p_which": {
    "voice": "Frill",
-   "text": "Tap the word that has the N G hum."
+   "text": "Tap the word that has the ng hum."
   },
   "p_chunk": {
    "voice": "Frill",
@@ -758,11 +778,11 @@ window.IR_DATA = {
   },
   "nohum": {
    "voice": "Frill",
-   "text": "No N G hum in that one. Keep looking!"
+   "text": "No ng hum in that one. Keep looking!"
   },
   "fishdone": {
    "voice": "Frill",
-   "text": "You caught all the N G fish!"
+   "text": "You caught all the ng fish!"
   },
   "tracegood": {
    "voice": "Frill",
@@ -806,7 +826,7 @@ window.IR_DATA = {
   },
   "reteach": {
    "voice": "Frill",
-   "text": "Thank you for trying! Let's learn N G again with a grown-up."
+   "text": "Thank you for trying! Let's learn ng again with a grown-up."
   },
   "humprompt": {
    "voice": "Frill",
