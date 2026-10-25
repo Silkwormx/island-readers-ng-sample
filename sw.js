@@ -1,5 +1,5 @@
 /* Island Readers sample service worker: precache everything, serve offline, support media range requests. */
-const CACHE = 'ir-ng-sample-f69e3e7c84';
+const CACHE = 'ir-ng-sample-f46126e6e4';
 const ASSETS = [
  "./",
  "./index.html",
@@ -16,16 +16,6 @@ const ASSETS = [
  "./audio/ing.mp3",
  "./audio/ng.mp3",
  "./audio/ong.mp3",
- "./audio/p_again.mp3",
- "./audio/p_badge.mp3",
- "./audio/p_fishdone.mp3",
- "./audio/p_g1.mp3",
- "./audio/p_g2.mp3",
- "./audio/p_g3.mp3",
- "./audio/p_g4.mp3",
- "./audio/p_g5.mp3",
- "./audio/p_hearttricky.mp3",
- "./audio/p_heartyes.mp3",
  "./audio/p_humprompt.mp3",
  "./audio/p_i1.mp3",
  "./audio/p_i2.mp3",
@@ -35,30 +25,19 @@ const ASSETS = [
  "./audio/p_i5b.mp3",
  "./audio/p_i6.mp3",
  "./audio/p_i7.mp3",
- "./audio/p_lessondone.mp3",
- "./audio/p_listendone.mp3",
- "./audio/p_next.mp3",
- "./audio/p_nohum.mp3",
  "./audio/p_p_build.mp3",
  "./audio/p_p_check.mp3",
  "./audio/p_p_chunk.mp3",
  "./audio/p_p_fish.mp3",
  "./audio/p_p_hear.mp3",
- "./audio/p_p_heart.mp3",
  "./audio/p_p_listen1.mp3",
  "./audio/p_p_listen2.mp3",
  "./audio/p_p_sent.mp3",
  "./audio/p_p_silly.mp3",
  "./audio/p_p_story.mp3",
  "./audio/p_p_trace.mp3",
+ "./audio/p_p_watch.mp3",
  "./audio/p_p_which.mp3",
- "./audio/p_reteach.mp3",
- "./audio/p_review.mp3",
- "./audio/p_storydone.mp3",
- "./audio/p_storyread.mp3",
- "./audio/p_tracegood.mp3",
- "./audio/p_tracemore.mp3",
- "./audio/p_try.mp3",
  "./audio/p_v1.mp3",
  "./audio/s_1.mp3",
  "./audio/s_2.mp3",
@@ -69,6 +48,11 @@ const ASSETS = [
  "./audio/s_7.mp3",
  "./audio/s_8.mp3",
  "./audio/s_9.mp3",
+ "./audio/sfx_ding.mp3",
+ "./audio/sfx_done.mp3",
+ "./audio/sfx_gong.mp3",
+ "./audio/sfx_tap.mp3",
+ "./audio/sfx_try.mp3",
  "./audio/ung.mp3",
  "./audio/w_I.mp3",
  "./audio/w_a.mp3",
@@ -163,13 +147,19 @@ self.addEventListener('install', (e) => {
 self.addEventListener('activate', (e) => {
   e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k.startsWith('ir-ng-sample-') && k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
 });
+/* GitHub Pages serves .mp3 as "audio/mp3", which Safari does not accept for media: always answer with audio/mpeg */
+function fixMime(res, url) {
+  if (!/\.mp3$/.test(url.pathname)) return res;
+  const hd = new Headers(res.headers); hd.set('Content-Type', 'audio/mpeg');
+  return new Response(res.body, { status: res.status, statusText: res.statusText, headers: hd });
+}
 async function ranged(req, res) {
   const m = /bytes=(\d*)-(\d*)/.exec(req.headers.get('range') || '');
   const buf = await res.arrayBuffer(); const size = buf.byteLength;
   let s = m && m[1] ? parseInt(m[1], 10) : 0; let e2 = m && m[2] ? parseInt(m[2], 10) : size - 1;
   if (e2 >= size) e2 = size - 1;
   return new Response(buf.slice(s, e2 + 1), { status: 206, headers: {
-    'Content-Type': res.headers.get('Content-Type') || 'application/octet-stream',
+    'Content-Type': /\.mp3$/.test(new URL(req.url).pathname) ? 'audio/mpeg' : (res.headers.get('Content-Type') || 'application/octet-stream'),
     'Content-Range': 'bytes ' + s + '-' + e2 + '/' + size, 'Content-Length': String(e2 - s + 1), 'Accept-Ranges': 'bytes' } });
 }
 self.addEventListener('fetch', (e) => {
@@ -177,11 +167,11 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(req.url); if (url.origin !== location.origin) return;
   e.respondWith((async () => {
     const hit = await caches.match(req, { ignoreSearch: true });
-    if (hit) return req.headers.has('range') ? ranged(req, hit) : hit;
+    if (hit) return req.headers.has('range') ? ranged(req, hit) : fixMime(hit, url);
     try {
       const net = await fetch(req);
       if (net && net.ok && !req.headers.has('range')) { const c = await caches.open(CACHE); c.put(req, net.clone()); }
-      return net;
+      return fixMime(net, url);
     } catch (err) {
       if (req.mode === 'navigate') { const idx = await caches.match('./index.html'); if (idx) return idx; }
       throw err;

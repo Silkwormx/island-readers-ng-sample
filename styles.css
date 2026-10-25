@@ -188,20 +188,26 @@ p{margin:.4em 0}
 .catchcount .ico{color:#B8664A}.catchcount b{font-size:1.6rem;color:var(--teal-d)}
 .pond{position:relative;width:100%;height:clamp(18rem,46vh,28rem);overflow:hidden;border-radius:1.6rem;border:4px solid #fff;box-shadow:var(--shadow);background:linear-gradient(#8ADFF0,#2D9CC9 60%,#1B6FA0)}
 .pond:before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 20% 0,#ffffff55,transparent 50%),repeating-linear-gradient(0deg,#ffffff10 0 2px,transparent 2px 38px);pointer-events:none}
-.fish{position:absolute;left:0;width:8rem;height:4.4rem;border:0;background:none;padding:0;animation:swim var(--dur) linear var(--delay) infinite;transform:translateX(-12rem);will-change:transform}
+.fish{position:absolute;left:0;width:8rem;height:4.4rem;border:0;background:none;padding:0;animation:swim var(--dur) ease-in-out var(--delay) infinite alternate;transform:translateX(.4rem);will-change:transform}
+.fish.rev{animation-direction:alternate-reverse}
+.fishbody{display:block;width:100%;height:100%;animation:flip calc(var(--dur) * 2) linear var(--delay) infinite;will-change:transform}
+.fish.rev .fishbody{animation-name:flipr}
+@keyframes flip{0%,47%{transform:scaleX(-1)}53%,100%{transform:scaleX(1)}}
+@keyframes flipr{0%,47%{transform:scaleX(1)}53%,100%{transform:scaleX(-1)}}
 .pond.paused .fish{animation-play-state:paused}
-@keyframes swim{from{transform:translateX(-12rem)}to{transform:translateX(calc(100cqw + 12rem))}}
+@keyframes swim{from{transform:translateX(.4rem)}to{transform:translateX(calc(100cqw - 8.4rem))}}
 .pond{container-type:inline-size}
 .fishsvg{width:100%;height:100%;display:block;filter:drop-shadow(0 4px 3px rgba(0,0,0,.25))}
-.fw{position:absolute;left:30%;top:50%;transform:translateY(-52%);font-size:1.5rem;font-weight:700;color:#fff;text-shadow:0 2px 0 #00000066,0 0 6px #0005;letter-spacing:.05em}
+.fw{position:absolute;left:47%;top:50%;transform:translate(-50%,-52%);font-size:1.5rem;font-weight:700;color:#fff;text-shadow:0 2px 0 #00000066,0 0 6px #0005;letter-spacing:.05em}
 .fish.caught{pointer-events:none;animation:none!important;transition:all .7s ease-in;transform:translate(40cqw,-130%) scale(.2) !important;opacity:0}
 .fish.wiggle .fishsvg{animation:nudge .5s}
 body.calm .pond{display:flex;flex-wrap:wrap;gap:1rem;padding:1rem;align-content:center;justify-content:center}
 body.calm .fish{position:static!important;animation:none;transform:none;top:auto!important}
+body.calm .fishbody{animation:none;transform:none}
 body.calm .fish.caught{display:none}
 @media (prefers-reduced-motion:reduce){
   .pond{display:flex;flex-wrap:wrap;gap:1rem;padding:1rem;align-content:center;justify-content:center}
-  .fish{position:static!important;animation:none;transform:none;top:auto!important}.fish.caught{display:none}
+  .fish{position:static!important;animation:none;transform:none;top:auto!important}.fishbody{animation:none;transform:none}.fish.caught{display:none}
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
 body.calm *{animation-duration:.01ms!important;animation-iteration-count:1!important}
@@ -274,3 +280,36 @@ body.calm .vtile.pop{animation:none}
 .heartchip{display:flex;align-items:center;gap:.5rem;font-family:inherit;font-size:2.4rem;font-weight:700;background:#fff;border:4px solid var(--ink);border-radius:1.3rem;padding:.2rem 1.1rem;min-height:4.6rem;box-shadow:0 5px 0 var(--ink);cursor:pointer}
 .heartchip .heartmark{color:#E0476B;font-size:1.8rem}.heartchip.seen{background:#F2FBF5}
 .listenmode .sentrow{justify-content:center}
+
+/* trace: numbered start dots + arrows */
+.cv.over{pointer-events:none}.cv.ink{touch-action:none}
+.strokemark .startdot{transition:opacity .25s}
+.strokemark.later{opacity:.4}.strokemark.done{display:none}
+.strokemark.now .startdot circle{animation:dotpulse 1.6s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes dotpulse{50%{transform:scale(1.18)}}
+.strokemark .startdot circle.nudge{animation:dotnudge .5s}
+@keyframes dotnudge{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.strokemark.flash path{stroke:#E8603C}
+body.calm .strokemark.now .startdot circle{animation:none}
+.btn.ghost{background:transparent;box-shadow:none;border-style:dashed;color:var(--ink2)}
+
+/* celebration: dancing Zip + Frill, falling confetti stars (play once, ~3 s). Calm motion = static stars + chime only. */
+.celeb{position:relative;width:100%;min-height:9.5rem;overflow:visible;pointer-events:none}
+.celeb .dancers{display:flex;justify-content:center;align-items:flex-end;gap:1.2rem;height:9.5rem}
+.celeb .dancers img{height:9rem;width:auto;transform-origin:50% 100%}
+.celeb.big .dancers{height:11.5rem}.celeb.big .dancers img{height:11rem}
+.celeb .dz{animation:dancea .6s ease-in-out 5}.celeb .df{animation:danceb .6s ease-in-out .15s 5}
+@keyframes dancea{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-1.1rem) rotate(5deg)}}
+@keyframes danceb{0%,100%{transform:translateY(0) rotate(4deg)}50%{transform:translateY(-1.3rem) rotate(-5deg)}}
+.cstar{position:absolute;top:-1rem;width:1.6rem;height:1.6rem;opacity:0;animation:cfall 2.8s ease-in 1 forwards;transform:scale(var(--s,1))}
+.cstar .ico{width:100%;height:100%;display:block}
+@keyframes cfall{0%{opacity:0;transform:translateY(-1rem) rotate(0) scale(var(--s,1))}12%{opacity:1}100%{opacity:0;transform:translateY(16rem) rotate(300deg) scale(var(--s,1))}}
+.celeb.still .dancers img,.celeb.still .cstar{animation:none}
+.celeb.still .cstar{opacity:1;top:auto;position:static;display:inline-block;transform:none;width:1.4rem;height:1.4rem;margin:0 .15rem}
+.celeb.still{display:flex;flex-direction:column;align-items:center}
+.celeb.still .cstar:nth-child(n+8){display:none}
+/* sound fallback pill */
+.soundfix{position:fixed;right:.8rem;bottom:.8rem;z-index:80;display:inline-flex;align-items:center;gap:.4rem;font:700 .95rem Andika,sans-serif;background:#fff;color:var(--ink);border:3px solid var(--ink);border-radius:1rem;padding:.4rem .8rem;box-shadow:0 4px 0 var(--ink);min-height:2.6rem}
+.soundfix .ico{width:1.2rem;height:1.2rem}
+
+.vtile.lit{background:#FFF1C4;transform:translateY(-4px) scale(1.06);box-shadow:0 9px 0 var(--ink)}

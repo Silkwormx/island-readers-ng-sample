@@ -57,6 +57,22 @@
   };
   function icon(name, cls) { return h('span', { class: 'ico ' + (cls || ''), html: ICON[name] }); }
 
+
+  /* ---------- end-of-lesson / end-of-check celebration: Zip + Frill bounce, confetti stars, text only ("Great job!") ---------- */
+  const reduced = () => document.body.classList.contains('calm') || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  function celebration(big) {
+    const still = reduced();
+    const wrap = h('div', { class: 'celeb' + (big ? ' big' : '') + (still ? ' still' : ''), 'aria-hidden': 'true' });
+    const cols = ['#F4B63F', '#E8603C', '#1FA6A6', '#7E57C2', '#E0457B', '#2E9E6B'];
+    const n = big ? 28 : 14;
+    for (let i = 0; i < n; i++) {
+      const st = h('span', { class: 'cstar', style: 'left:' + (4 + (i * 97 / n + (i % 3) * 3)) % 96 + '%;animation-delay:' + ((i % 7) * 0.12).toFixed(2) + 's;animation-duration:' + (2.2 + (i % 5) * 0.25).toFixed(2) + 's;color:' + cols[i % cols.length] + ';--s:' + (0.7 + (i % 4) * 0.22).toFixed(2) }, icon('star'));
+      wrap.append(st);
+    }
+    wrap.append(h('div', { class: 'dancers' }, h('img', { class: 'dz', src: 'img/zip.webp', alt: '' }), h('img', { class: 'df', src: 'img/frill.webp', alt: '' })));
+    return wrap;
+  }
+
   /* ---------- persistent state (localStorage, with in-memory fallback) ---------- */
   const blank = () => ({
     v: 1, lessons: {}, check: { best: null, last: null, attempts: 0 }, sticker: false, badge: false,
@@ -106,37 +122,72 @@
   }
   function applySettings() { document.body.classList.toggle('calm', !!S.settings.calm); }
 
-  /* ---------- audio: recorded voice only ---------- */
+  /* ---------- audio: recorded voice only ----------
+     ONE shared <audio> element is reused for everything (iOS/Android only need the first tap to unlock it; a brand-new Audio()
+     per sound is blocked by Safari when it starts outside a tap, which silenced Story Time, the Check and long chains).
+     play() rejections are never swallowed: they show a small "Sound off? Tap to enable" button that unlocks and replays. */
+  const SILENT = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=';
   const Snd = {
-    cur: null, id: 0,
-    stop() {
-      this.id++;
-      if (this.cur) { try { this.cur.pause(); } catch (e) { /* */ } this.cur = null; }
-      $$('.playing').forEach((e) => e.classList.remove('playing'));
+    el: null, id: 0, unlocked: false, last: null, blocked: false, log: [],
+    init() {
+      if (this.el) return this.el;
+      const a = document.createElement('audio'); a.preload = 'auto'; a.setAttribute('playsinline', ''); a.style.display = 'none';
+      document.body.append(a); this.el = a;
+      try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) { /* not supported */ }
+      const unlock = () => {
+        if (this.unlocked) return; this.unlocked = true;
+        if (!this.playing) { try { a.src = SILENT; const p = a.play(); if (p && p.catch) p.catch(() => {}); } catch (e) { /* */ } }
+        ['pointerdown', 'touchend', 'click', 'keydown'].forEach((ev) => document.removeEventListener(ev, unlock, true));
+      };
+      ['pointerdown', 'touchend', 'click', 'keydown'].forEach((ev) => document.addEventListener(ev, unlock, true));
+      return a;
     },
-    /* Resolves true when finished, false on error. If stopped by something else it never resolves (the flow is cancelled). */
+    stop() {
+      this.id++; this.playing = false;
+      if (this.el) { try { this.el.pause(); } catch (e) { /* */ } }
+      $$('.playing').forEach((e) => e.classList.remove('playing')); $$('.vtile.lit').forEach((e) => e.classList.remove('lit'));
+    },
+    showFallback() {
+      this.blocked = true; if ($('#soundfix')) return;
+      const b = h('button', { id: 'soundfix', class: 'soundfix', type: 'button', 'aria-label': 'Sound is off. Tap to turn sound on.' }, icon('speaker'), 'Sound off? Tap to enable');
+      b.addEventListener('click', () => { const l = this.last; b.remove(); this.blocked = false; this.unlocked = true; if (l) l(); else this.play(A.ng); });
+      document.body.append(b);
+    },
+    hideFallback() { this.blocked = false; const b = $('#soundfix'); if (b) b.remove(); },
+    /* Resolves true when it finished, false on error/rejection. If another sound stops it, it never resolves (the old flow is cancelled). */
     play(src, opts) {
-      opts = opts || {};
+      opts = opts || {}; const a = this.init();
       if (!opts.keep) this.stop();
-      const id = this.id;
+      const id = this.id; this.log.push(src); this.last = () => this.play(src, opts);
       return new Promise((resolve) => {
-        const a = new Audio(src); this.cur = a; let raf = 0;
-        const fin = (ok) => { cancelAnimationFrame(raf); if (this.cur === a) this.cur = null; resolve(ok); };
-        a.addEventListener('ended', () => fin(true));
-        a.addEventListener('error', () => fin(false));
-        if (opts.onTime) {
-          const tick = () => { if (this.id !== id || this.cur !== a) return; opts.onTime(a.currentTime); raf = requestAnimationFrame(tick); };
-          raf = requestAnimationFrame(tick);
-        }
-        const p = a.play(); if (p && p.catch) p.catch(() => fin(false));
+        let done = false, raf = 0, timer = 0, lastT = -1, stuck = 0;
+        const cleanup = () => { done = true; cancelAnimationFrame(raf); clearInterval(timer); ['ended', 'error', 'playing'].forEach((e, i) => a.removeEventListener(e, hs[i])); };
+        const fin = (ok) => { if (done) return; cleanup(); this.playing = false; resolve(ok); };
+        const hs = [() => { if (this.id === id) fin(true); }, () => { if (this.id === id) fin(false); }, () => { this.hideFallback(); }];
+        a.addEventListener('ended', hs[0]); a.addEventListener('error', hs[1]); a.addEventListener('playing', hs[2]);
+        this.playing = true;
+        try { a.src = src; a.currentTime = 0; } catch (e) { /* */ }
+        if (opts.onTime) { const tick = () => { if (done || this.id !== id) return; opts.onTime(a.currentTime); raf = requestAnimationFrame(tick); }; raf = requestAnimationFrame(tick); }
+        /* watchdog: 'ended' is not reliable on every device; also detect a stalled or never-started element */
+        timer = setInterval(() => {
+          if (this.id !== id) { cleanup(); return; }
+          const d = a.duration;
+          if (a.ended || (isFinite(d) && d > 0 && a.currentTime >= d - 0.03)) return fin(true);
+          if (a.currentTime === lastT && !a.paused) stuck += 100; else if (a.currentTime !== lastT) stuck = 0;
+          if (a.paused && a.currentTime === 0) stuck += 100;
+          lastT = a.currentTime; if (stuck > 6000) { this.showFallback(); fin(false); }
+        }, 100);
+        let p; try { p = a.play(); } catch (e) { p = Promise.reject(e); }
+        if (p && p.catch) p.catch((e) => { if (this.id !== id) return; if (e && e.name === 'AbortError') return; this.showFallback(); fin(false); });
       });
     },
     async seq(list, gap) {
       this.stop(); const id = this.id;
       for (const s of list) {
         if (this.id !== id) return false;
-        await this.play(s, { keep: true });
+        const ok = await this.play(s, { keep: true });
         if (this.id !== id) return false;
+        if (ok === false) return false;
         await sleep(gap == null ? 140 : gap);
       }
       return true;
@@ -146,11 +197,12 @@
     word: (w) => 'audio/w_' + w + '.mp3',
     prompt: (id) => 'audio/p_' + id + '.mp3',
     chunk: (c) => 'audio/' + c + '.mp3',
+    sfx: { ding: 'audio/sfx_ding.mp3', tryagain: 'audio/sfx_try.mp3', done: 'audio/sfx_done.mp3', gong: 'audio/sfx_gong.mp3', tap: 'audio/sfx_tap.mp3' },
     ng: 'audio/ng.mp3'
   };
-  const GOOD = ['g1', 'g2', 'g3', 'g4', 'g5'];
-  function say(id) { return Snd.play(A.prompt(id)); }
   function sayWord(w) { return Snd.play(A.word(w)); }
+  const ding = (w) => Snd.seq(w ? [A.sfx.ding, A.word(w)] : [A.sfx.ding], 90);
+  const tryAgain = (w) => Snd.seq(w ? [A.sfx.tryagain, w] : [A.sfx.tryagain], 150);
 
   /* screen token so async flows stop when the child leaves */
   let screenId = 0;
@@ -166,6 +218,6 @@
     return b;
   }
 
-  window.IR = { D, S: () => S, save, resetAll, load, h, $, $$, sleep, shuffle, pick, colorWord, icon, ICON, CHUNK_COLORS,
-    touchStreak, streakInfo, totalStars, applySettings, Snd, A, GOOD, say, sayWord, newScreen, speakerBtn };
+  window.IR = { celebration, ding, tryAgain, D, S: () => S, save, resetAll, load, h, $, $$, sleep, shuffle, pick, colorWord, icon, ICON, CHUNK_COLORS,
+    touchStreak, streakInfo, totalStars, applySettings, Snd, A, sayWord, newScreen, speakerBtn };
 })();

@@ -197,11 +197,11 @@
       const backBtn = h('button', { class: 'btn big', type: 'button', onclick: () => { location.hash = '#/island3'; } }, 'Back to the trail');
       ctx.progress(1);
       const ov = h('div', { class: 'complete' }, h('div', { class: 'cbox' },
-        h('img', { class: 'char zip big', src: 'img/zip.webp', alt: 'Zip cheering' }),
-        h('h1', null, 'Lesson complete!'), h('p', { class: 'lead' }, L.title),
+        IR.celebration(false),
+        h('h1', null, 'Great job!'), h('p', { class: 'lead' }, L.title),
         h('div', { class: 'bigstars', 'aria-label': stars + ' stars' }, ...[1, 2, 3].map((k) => icon(k <= stars ? 'star' : 'starOutline', (k <= stars ? 'on' : 'off') + ' k' + k))),
         h('div', { class: 'row' }, backBtn, nextBtn)));
-      app.append(ov); Snd.play(A.prompt('lessondone'));
+      app.append(ov); Snd.play(A.sfx.done);
     }
     app.append(h('div', { class: 'screen lessonscreen', style: '--c:' + L.color }, h('header', { class: 'lesson-top' }, x, bar, starTop), instrBox, stage));
     setBar(); L.run(ctx);

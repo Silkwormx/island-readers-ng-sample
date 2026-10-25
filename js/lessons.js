@@ -2,9 +2,8 @@
 (function () {
   'use strict';
   const IR = window.IR;
-  const { D, h, $, $$, sleep, shuffle, pick, colorWord, icon, Snd, A, GOOD, say, sayWord, speakerBtn, CHUNK_COLORS } = IR;
+  const { D, h, $, $$, sleep, shuffle, pick, colorWord, icon, Snd, A, sayWord, speakerBtn, CHUNK_COLORS } = IR;
   const LESSONS = (IR.LESSONS = []);
-  const goodSound = () => say(pick(GOOD));
   const calm = () => document.body.classList.contains('calm') || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 
 
@@ -71,7 +70,15 @@
               Snd.play(A.chunk(c));
             } }, h('span', { class: 'vv', style: 'color:' + col }, c[0]), h('span', { class: 'vng' }, 'ng'), h('span', { class: 'vsum' }, c)));
           });
-          visual.append(row);
+          const chant = h('button', { class: 'btn', type: 'button', onclick: async () => {
+            Snd.stop(); const id = Snd.id; const tiles = $$('.vtile', row);
+            for (let k = 0; k < D.chunks.length; k++) {      /* slow chant: one clear sound at a time, 480 ms gap, the matching tile lights up */
+              if (Snd.id !== id) return; tiles.forEach((t) => t.classList.remove('lit')); tiles[k].classList.add('lit', 'seen');
+              await Snd.play(A.chunk(D.chunks[k]), { keep: true }); if (Snd.id !== id) return; await sleep(480);
+            }
+            tiles.forEach((t) => t.classList.remove('lit'));
+          } }, icon('speaker'), 'Hear them slowly');
+          visual.append(row, chant);
         }
         if (b.show === 'chips') {
           const row = h('div', { class: 'chips' });
@@ -147,7 +154,7 @@
         }
         async function end() {
           if (finished) return; finished = true; token++; auto = false; Snd.stop(); ctx.progress(1);
-          await Snd.seq([A.prompt('listendone')], 100); if (ctx.scr.ok()) { await sleep(300); if (ctx.scr.ok()) ctx.finish(); }
+          await sleep(500); if (ctx.scr.ok()) ctx.finish();
         }
         prev.addEventListener('click', () => { if (p > 0) { token++; Snd.stop(); setPage(p - 1); if (auto) run(); else playPage(); } });
         next.addEventListener('click', () => { if (p < pages.length - 1) { token++; Snd.stop(); setPage(p + 1); if (auto) run(); else playPage(); } else end(); });
@@ -183,13 +190,13 @@
               locked = true; b.classList.add('right'); b.innerHTML = ''; b.append(colorWord(w), icon('check'));
               $$('.choice', grid).forEach((o) => { if (o !== b) o.classList.add('fade'); });
               status.textContent = 'Yes! ' + w;
-              await Snd.seq([A.word(w), A.prompt(pick(GOOD))], 150);
+              await IR.ding(w);
               if (!ctx.scr.ok()) return;
               await sleep(500); if (!ctx.scr.ok()) return;
               r++; if (r < rounds.length) round(); else { ctx.progress(1); ctx.finish(); }
             } else {
               misses++; ctx.miss(); b.classList.add('tried'); status.textContent = 'Not that one. Listen again.';
-              await Snd.seq([A.prompt('again'), A.word(R.word)], 150);
+              await IR.tryAgain(A.word(R.word));
               if (misses >= 2) $$('.choice', grid).forEach((o) => { if (o.dataset.w === R.word) o.classList.add('hint'); });
             }
           });
@@ -224,11 +231,13 @@
         const lane = idx % lanes;
         const fish = h('button', { class: 'fish', type: 'button', 'data-w': f.w, 'aria-label': 'fish with the word ' + f.w },
           '');
-        fish.innerHTML = '<svg class="fishsvg" viewBox="0 0 200 110" aria-hidden="true"><path d="M170 55 L198 28 Q190 55 198 82Z" fill="' + hues[idx % hues.length] + '"/><ellipse cx="95" cy="55" rx="85" ry="46" fill="' + hues[idx % hues.length] + '"/><path d="M60 14 Q95 -2 130 14 Q95 22 60 14Z" fill="#00000022"/><circle cx="38" cy="42" r="8" fill="#fff"/><circle cx="36" cy="42" r="4" fill="#2b2540"/><path d="M26 66 Q36 74 46 66" stroke="#2b2540" stroke-width="3" fill="none" stroke-linecap="round"/></svg><span class="fw">' + f.w + '</span>';
+        fish.innerHTML = '<span class="fishbody"><svg class="fishsvg" viewBox="0 0 200 110" aria-hidden="true"><path d="M170 55 L198 28 Q190 55 198 82Z" fill="' + hues[idx % hues.length] + '"/><ellipse cx="95" cy="55" rx="85" ry="46" fill="' + hues[idx % hues.length] + '"/><path d="M60 14 Q95 -2 130 14 Q95 22 60 14Z" fill="#00000022"/><circle cx="38" cy="42" r="8" fill="#fff"/><circle cx="36" cy="42" r="4" fill="#2b2540"/><path d="M26 66 Q36 74 46 66" stroke="#2b2540" stroke-width="3" fill="none" stroke-linecap="round"/></svg></span><span class="fw">' + f.w + '</span>';
         fish.style.setProperty('--lane', lane);
-        const dur = 30 + lane * 3.5; const round = Math.floor(idx / lanes);
+        /* fish swim back and forth inside the pond; the sprite faces left in the art, so it is mirrored while it swims right */
+        const dur = 15 + lane * 2.4; const round = Math.floor(idx / lanes); const rev = lane % 2 === 1;
+        fish.classList.toggle('rev', rev);
         fish.style.setProperty('--dur', dur + 's');
-        fish.style.setProperty('--delay', '-' + (dur * (0.5 * round + lane * 0.13)).toFixed(1) + 's');
+        fish.style.setProperty('--delay', '-' + ((dur * 2) * ((0.31 * round + lane * 0.19 + 0.07) % 1)).toFixed(2) + 's');
         fish.style.top = (2 + lane * 19) + '%';
         fish.addEventListener('click', async () => {
           if (fish.classList.contains('caught')) return;
@@ -236,13 +245,13 @@
             fish.classList.add('caught'); caught++; counter.querySelector('b').textContent = caught;
             status.textContent = 'Yes! ' + f.w + ' has ng.'; ctx.progress(caught / need);
             const done = caught >= need;
-            await Snd.seq([A.word(f.w), done ? A.prompt('fishdone') : A.prompt(pick(GOOD))], 150);
+            await IR.ding(f.w);
             if (!ctx.scr.ok()) return;
             if (done) { await sleep(500); if (ctx.scr.ok()) ctx.finish(); }
           } else {
             ctx.miss(); fish.classList.add('wiggle'); setTimeout(() => fish.classList.remove('wiggle'), 800);
             status.textContent = f.w + ': no ng hum in that one. Keep looking!';
-            await Snd.seq([A.word(f.w), A.prompt('nohum')], 150);
+            await IR.tryAgain(A.word(f.w));
           }
         });
         pond.append(fish);
@@ -273,13 +282,13 @@
             if (texts.join('') === R.word) {
               status.textContent = 'Yes! ' + R.word;
               slotsEl.classList.add('right');
-              await Snd.seq([A.word(R.word), A.prompt(pick(GOOD))], 150);
+              await IR.ding(R.word);
               if (!ctx.scr.ok()) return; await sleep(500); if (!ctx.scr.ok()) return;
               r++; if (r < rounds.length) round(); else { ctx.progress(1); ctx.finish(); }
             } else {
               misses++; ctx.miss(); status.textContent = 'Almost! Listen again and try again.';
               slotsEl.classList.add('almost');
-              await Snd.seq([A.prompt('again'), A.word(R.word)], 150);
+              await IR.tryAgain(A.word(R.word));
               if (!ctx.scr.ok()) return;
               slotsEl.classList.remove('almost'); b.slots.fill(null);
               if (misses >= 2) b.hint = 'o1';

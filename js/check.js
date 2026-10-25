@@ -24,7 +24,7 @@
         if (locked) return; locked = true; if (ok) score++; else miss.push(it.word || it.answer);
         btn.classList.add('picked'); $$('.choice', stage).forEach((b) => { if (b !== btn) b.classList.add('fade'); });
         status.textContent = 'Thank you! Next one.';
-        Snd.stop(); await sleep(700); if (!ctx.scr.ok()) return; q++; step();
+        Snd.play(A.sfx.tap); await sleep(700); if (!ctx.scr.ok()) return; q++; step();
       };
       const body = h('div', { class: 'activity' });
       if (it.silly) body.append(h('div', { class: 'sillytag' }, h('img', { src: 'img/zip.webp', alt: '' }), h('span', null, 'Zip\u2019s silly word!')));
@@ -63,27 +63,24 @@
     const home = h('button', { class: 'btn big primary', type: 'button', onclick: () => { location.hash = '#/home'; } }, 'See the sky map');
     const trail = h('button', { class: 'btn big', type: 'button', onclick: () => { location.hash = '#/island3'; } }, 'Back to the trail');
     const again = h('button', { class: 'btn big', type: 'button', onclick: () => { location.hash = '#/check'; } }, 'Try the check again');
-    wrap.append(h('img', { class: 'char zip big', src: 'img/zip.webp', alt: 'Zip cheering' }));
-    let audio;
+    if (score < 7) wrap.append(h('img', { class: 'char zip big', src: 'img/zip.webp', alt: 'Zip' }));
     if (score >= 9) {
-      audio = 'badge';
       wrap.append(h('div', { class: 'badgeart', html: IR.ICON.badge }),
         h('h1', null, 'Island badge!'), h('p', { class: 'lead' }, 'The bridge lights up!'),
         h('p', null, 'You got ' + score + ' out of 10. Your ng sticker is on the map.'),
         h('div', { class: 'bridge-demo' }, h('i'), h('i'), h('i'), h('i'), h('i')),
         h('div', { class: 'row' }, home, trail));
     } else if (score >= 7) {
-      audio = 'review';
       wrap.append(h('h1', null, 'Review islet'), h('p', { class: 'lead' }, 'Good work! Let\u2019s practice a little more, then try again.'),
         h('p', null, 'You got ' + score + ' out of 10. Replay Hear and Pick or Build-a-Word, then take the check again.'),
         h('div', { class: 'row' }, trail, again));
     } else {
-      audio = 'reteach';
       wrap.append(h('h1', null, 'Re-teach islet'), h('p', { class: 'lead' }, 'Thank you for trying! Let\u2019s learn ng again with a grown-up.'),
         h('p', null, 'You got ' + score + ' out of 10. A grown-up can teach the ng sound again with you. Then you can start a fresh trail and try the check again.'),
         h('div', { class: 'row' }, trail, again));
     }
-    root.append(wrap); Snd.play(A.prompt(audio));
+    if (score >= 7) wrap.prepend(IR.celebration(score >= 9));
+    root.append(wrap); try { window.scrollTo(0, 0); } catch (e) { /* ignore */ } Snd.play(score >= 9 ? A.sfx.gong : A.sfx.done);
   }
   IR.runCheck = runCheck; IR.renderResult = renderResult;
 })();

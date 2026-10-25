@@ -41,35 +41,35 @@ window.IR_DATA = {
    ],
    "t": [
     [
-     0.104,
-     0.498
+     0.107,
+     0.533
     ],
     [
-     0.512,
-     0.689
+     0.547,
+     0.661
     ],
     [
-     0.702,
-     1.096
+     0.675,
+     1.03
     ],
     [
-     1.11,
-     1.531
+     1.044,
+     1.314
     ],
     [
-     1.545,
-     1.68
+     1.328,
+     1.414
     ],
     [
-     1.694,
-     1.803
+     1.428,
+     1.513
     ],
     [
-     1.816,
-     2.305
+     1.527,
+     2.067
     ]
    ],
-   "dur": 3.26
+   "dur": 3.1
   },
   {
    "n": 2,
@@ -84,27 +84,27 @@ window.IR_DATA = {
    ],
    "t": [
     [
-     0.104,
-     0.471
+     0.107,
+     0.519
     ],
     [
-     0.485,
-     0.77
+     0.533,
+     0.746
     ],
     [
-     0.784,
-     0.865
+     0.76,
+     0.845
     ],
     [
-     0.879,
-     1.205
+     0.86,
+     1.13
     ],
     [
-     1.218,
-     1.626
+     1.144,
+     1.613
     ]
    ],
-   "dur": 2.57
+   "dur": 2.66
   },
   {
    "n": 3,
@@ -120,31 +120,31 @@ window.IR_DATA = {
    ],
    "t": [
     [
-     0.104,
-     0.308
+     0.107,
+     0.32
     ],
     [
-     0.322,
-     0.58
+     0.334,
+     0.533
     ],
     [
-     0.593,
-     0.92
+     0.547,
+     0.831
     ],
     [
-     0.933,
-     1.001
+     0.845,
+     0.902
     ],
     [
-     1.015,
-     1.449
+     0.916,
+     1.257
     ],
     [
-     1.463,
-     1.993
+     1.272,
+     1.826
     ]
    ],
-   "dur": 2.95
+   "dur": 2.86
   },
   {
    "n": 4,
@@ -160,31 +160,31 @@ window.IR_DATA = {
    ],
    "t": [
     [
-     0.104,
-     0.539
+     0.107,
+     0.519
     ],
     [
-     0.553,
-     0.906
+     0.533,
+     0.803
     ],
     [
-     0.92,
-     0.987
+     0.817,
+     0.888
     ],
     [
-     1.001,
-     1.463
+     0.902,
+     1.3
     ],
     [
-     1.721,
-     2.088
+     1.57,
+     1.882
     ],
     [
-     2.102,
-     2.618
+     1.897,
+     2.422
     ]
    ],
-   "dur": 3.58
+   "dur": 3.46
   },
   {
    "n": 5,
@@ -201,35 +201,35 @@ window.IR_DATA = {
    ],
    "t": [
     [
-     0.104,
-     0.689
+     0.107,
+     0.732
     ],
     [
-     1.617,
-     2.242
+     1.705,
+     2.372
     ],
     [
-     3.166,
-     3.37
+     3.338,
+     3.537
     ],
     [
-     3.383,
-     3.75
+     3.551,
+     3.821
     ],
     [
-     3.764,
-     4.103
+     3.835,
+     4.091
     ],
     [
-     4.117,
-     4.28
+     4.105,
+     4.233
     ],
     [
-     4.293,
-     4.851
+     4.247,
+     4.801
     ]
    ],
-   "dur": 5.78
+   "dur": 5.83
   },
   {
    "n": 6,
@@ -246,35 +246,35 @@ window.IR_DATA = {
    ],
    "t": [
     [
-     0.104,
-     0.458
+     0.107,
+     0.505
     ],
     [
-     0.471,
-     0.879
+     0.519,
+     0.888
     ],
     [
-     0.892,
-     1.028
+     0.902,
+     1.016
     ],
     [
-     1.042,
-     1.327
+     1.03,
+     1.286
     ],
     [
-     1.341,
-     1.599
+     1.3,
+     1.556
     ],
     [
-     1.871,
-     2.129
+     1.811,
+     2.067
     ],
     [
-     2.401,
-     2.699
+     2.351,
+     2.791
     ]
    ],
-   "dur": 3.67
+   "dur": 3.84
   },
   {
    "n": 7,
@@ -291,35 +291,35 @@ window.IR_DATA = {
    ],
    "t": [
     [
-     0.104,
-     0.498
+     0.107,
+     0.547
     ],
     [
-     0.512,
-     0.92
+     0.561,
+     0.916
     ],
     [
-     0.933,
-     1.151
+     0.931,
+     1.087
     ],
     [
-     1.164,
-     1.286
+     1.101,
+     1.215
     ],
     [
-     1.3,
-     1.531
+     1.229,
+     1.442
     ],
     [
-     1.545,
-     1.667
+     1.456,
+     1.57
     ],
     [
-     1.68,
-     2.102
+     1.584,
+     2.024
     ]
    ],
-   "dur": 3.05
+   "dur": 3.07
   },
   {
    "n": 8,
@@ -336,35 +336,35 @@ window.IR_DATA = {
    ],
    "t": [
     [
-     0.104,
-     0.458
+     0.107,
+     0.448
     ],
     [
-     0.471,
-     0.661
+     0.462,
+     0.604
     ],
     [
-     0.675,
-     1.232
+     0.618,
+     1.215
     ],
     [
-     2.188,
-     2.473
+     2.202,
+     2.486
     ],
     [
-     2.486,
-     2.554
+     2.5,
+     2.571
     ],
     [
-     2.568,
-     3.125
+     2.585,
+     3.054
     ],
     [
-     3.139,
-     3.696
+     3.068,
+     3.58
     ]
    ],
-   "dur": 4.63
+   "dur": 4.61
   },
   {
    "n": 9,
@@ -381,35 +381,35 @@ window.IR_DATA = {
    ],
    "t": [
     [
-     0.104,
-     0.526
+     0.107,
+     0.561
     ],
     [
-     0.824,
-     1.3
+     0.817,
+     1.357
     ],
     [
-     2.242,
-     2.432
+     2.344,
+     2.528
     ],
     [
-     2.446,
-     2.785
+     2.543,
+     2.841
     ],
     [
-     2.799,
-     2.867
+     2.855,
+     2.912
     ],
     [
-     2.88,
-     3.315
+     2.926,
+     3.267
     ],
     [
-     3.329,
-     3.859
+     3.281,
+     3.835
     ]
    ],
-   "dur": 4.8
+   "dur": 4.87
   }
  ],
  "sentences": [
@@ -690,7 +690,7 @@ window.IR_DATA = {
   },
   "i7": {
    "voice": "Zip",
-   "text": "Great job with ng! Now let's listen to a story together."
+   "text": "Now let's listen to a story together."
   },
   "p_hear": {
    "voice": "Frill",
@@ -706,11 +706,11 @@ window.IR_DATA = {
   },
   "p_trace": {
    "voice": "Frill",
-   "text": "Trace the N and the G with your finger."
+   "text": "Trace the N and the G. Start at the green dot."
   },
-  "p_heart": {
+  "p_watch": {
    "voice": "Frill",
-   "text": "Here are some heart words. Say each word. Then tap how it felt."
+   "text": "Watch me first!"
   },
   "p_sent": {
    "voice": "Frill",
@@ -728,10 +728,6 @@ window.IR_DATA = {
    "voice": "Frill",
    "text": "Now listen to the story. Just follow along with your eyes. You do not have to read yet!"
   },
-  "listendone": {
-   "voice": "Frill",
-   "text": "What a fun story! Now let's practice the ng sound."
-  },
   "p_check": {
    "voice": "Zip",
    "text": "Time for Zip's check! Do your best. Take your time."
@@ -747,86 +743,6 @@ window.IR_DATA = {
   "p_silly": {
    "voice": "Zip",
    "text": "This is one of my silly words!"
-  },
-  "g1": {
-   "voice": "Frill",
-   "text": "Nice!"
-  },
-  "g2": {
-   "voice": "Frill",
-   "text": "Yes!"
-  },
-  "g3": {
-   "voice": "Frill",
-   "text": "You got it!"
-  },
-  "g4": {
-   "voice": "Frill",
-   "text": "Great job!"
-  },
-  "g5": {
-   "voice": "Frill",
-   "text": "Super!"
-  },
-  "try": {
-   "voice": "Frill",
-   "text": "Not quite. Listen once more, then try again."
-  },
-  "again": {
-   "voice": "Frill",
-   "text": "Hmm. Let's listen again."
-  },
-  "nohum": {
-   "voice": "Frill",
-   "text": "No ng hum in that one. Keep looking!"
-  },
-  "fishdone": {
-   "voice": "Frill",
-   "text": "You caught all the ng fish!"
-  },
-  "tracegood": {
-   "voice": "Frill",
-   "text": "Beautiful tracing!"
-  },
-  "tracemore": {
-   "voice": "Frill",
-   "text": "Nice start! Trace a little more."
-  },
-  "lessondone": {
-   "voice": "Zip",
-   "text": "Lesson complete! Great work!"
-  },
-  "heartyes": {
-   "voice": "Frill",
-   "text": "Great!"
-  },
-  "hearttricky": {
-   "voice": "Frill",
-   "text": "Okay. We will see it again."
-  },
-  "storyread": {
-   "voice": "Frill",
-   "text": "Now you read it to a grown-up!"
-  },
-  "storydone": {
-   "voice": "Frill",
-   "text": "What a good reader you are!"
-  },
-  "next": {
-   "voice": "Frill",
-   "text": "Thanks! Next one."
-  },
-  "badge": {
-   "voice": "Zip",
-   "text": "Wow! You did it! Island badge! The bridge lights up!"
-  },
-  "review": {
-   "voice": "Frill",
-   "text": "Good work! Let's practice a little more, then try again."
-  },
-  "reteach": {
-   "voice": "Frill",
-   "text": "Thank you for trying! Let's learn ng again with a grown-up."
   },
   "humprompt": {
    "voice": "Frill",
