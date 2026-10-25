@@ -1,5 +1,5 @@
 /* Island Readers sample service worker: precache everything, serve offline, support media range requests. */
-const CACHE = 'ir-ng-sample-f46126e6e4';
+const CACHE = 'ir-ng-sample-9b495e8f72';
 const ASSETS = [
  "./",
  "./index.html",
@@ -38,6 +38,7 @@ const ASSETS = [
  "./audio/p_p_trace.mp3",
  "./audio/p_p_watch.mp3",
  "./audio/p_p_which.mp3",
+ "./audio/p_s1.mp3",
  "./audio/p_v1.mp3",
  "./audio/s_1.mp3",
  "./audio/s_2.mp3",
@@ -139,6 +140,7 @@ const ASSETS = [
  "./js/screens.js",
  "./manifest.webmanifest",
  "./styles.css",
+ "./video/ng_cartoon_captions.json",
  "./video/ng_cartoon_small.mp4"
 ];
 self.addEventListener('install', (e) => {

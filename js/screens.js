@@ -41,10 +41,60 @@
     box.prepend(x);
     modalRoot.append(h('div', { class: 'scrim' }, box)); return { close };
   }
+  /* ---- cartoon player with word-by-word captions (CC on by default, remembered) ---- */
+  const CC_KEY = 'ir_cc_on';
+  function ccGet() { try { const r = localStorage.getItem(CC_KEY); return r === null ? true : r === '1'; } catch (e) { return true; } }
+  function ccSet(on) { try { localStorage.setItem(CC_KEY, on ? '1' : '0'); } catch (e) { /* ignore */ } }
+  let ccCache = null;
+  function loadCaptions() {
+    if (ccCache) return Promise.resolve(ccCache);
+    return fetch('video/ng_cartoon_captions.json').then((r) => r.json()).then((d) => { ccCache = d; return d; }).catch(() => []);
+  }
+  function captionPlayer(v, box, cues) {
+    let on = ccGet(); let curCue = -2; let curWord = -2; let spans = []; let raf = 0;
+    const overlay = h('div', { class: 'cc-overlay', 'aria-hidden': 'true' });
+    const toggle = h('button', { class: 'btn small ghost cc-toggle', type: 'button', 'aria-pressed': String(on) });
+    const setToggle = () => { toggle.textContent = on ? 'CC: on' : 'CC: off'; toggle.setAttribute('aria-pressed', String(on)); overlay.classList.toggle('off', !on); };
+    function findCue(t) { let lo = 0; let hi = cues.length - 1; while (lo <= hi) { const m = (lo + hi) >> 1; const c = cues[m]; if (t < c.start) hi = m - 1; else if (t >= c.end) lo = m + 1; else return m; } return -1; }
+    function render() {
+      const t = v.currentTime; const ci = findCue(t);
+      if (ci !== curCue) {
+        curCue = ci; curWord = -2; overlay.innerHTML = ''; spans = [];
+        if (ci >= 0) {
+          const c = cues[ci];
+          const who = h('span', { class: 'cc-who cc-' + c.speaker.toLowerCase() }, c.speaker + ':');
+          overlay.append(who);
+          c.words.forEach((w) => { const sp = h('span', { class: 'cc-w' }, w.w); spans.push(sp); overlay.append(' ', sp); });
+        }
+        overlay.classList.toggle('empty', ci < 0);
+      }
+      if (ci >= 0) {
+        const ws = cues[ci].words; let wi = -1;
+        for (let i = 0; i < ws.length; i++) { if (t >= ws[i].start && t < ws[i].end) { wi = i; break; } }
+        if (wi !== curWord) { if (curWord >= 0 && spans[curWord]) spans[curWord].classList.remove('on'); if (wi >= 0) spans[wi].classList.add('on'); curWord = wi; }
+      }
+    }
+    function loop() { render(); if (!v.paused && !v.ended) raf = requestAnimationFrame(loop); else raf = 0; }
+    function kick() { if (!raf) raf = requestAnimationFrame(loop); }
+    ['play', 'playing', 'seeking', 'seeked', 'timeupdate', 'pause', 'ended', 'loadedmetadata'].forEach((ev) => v.addEventListener(ev, () => { render(); if (!v.paused) kick(); }));
+    toggle.addEventListener('click', () => { on = !on; ccSet(on); setToggle(); });
+    setToggle(); render();
+    const fsBtn = (box.requestFullscreen || box.webkitRequestFullscreen) ? h('button', { class: 'btn small ghost', type: 'button' }, 'Full screen') : null;
+    if (fsBtn) fsBtn.addEventListener('click', () => { const f = box.requestFullscreen ? box.requestFullscreen() : box.webkitRequestFullscreen(); if (f && f.catch) f.catch(() => {}); });
+    return { overlay, toggle, fsBtn, stop: () => { cancelAnimationFrame(raf); raf = 0; } };
+  }
   IR.openCartoon = function () {
     Snd.stop();
-    const v = h('video', { controls: true, playsinline: true, preload: 'metadata', poster: 'img/island3_banner.jpg' }, h('source', { src: 'video/ng_cartoon_small.mp4', type: 'video/mp4' }));
-    openModal(h('div', null, h('h2', null, 'Zip and Frill: The Sing-a-Ling Machine'), v, h('p', { class: 'small' }, 'Optional cartoon, 1 min 44 s.')), 'video');
+    const v = h('video', { controls: true, playsinline: true, preload: 'metadata', poster: 'img/island3_banner.jpg', controlslist: 'nofullscreen', 'aria-label': 'Zip and Frill cartoon with captions' }, h('source', { src: 'video/ng_cartoon_small.mp4', type: 'video/mp4' }));
+    const wrap = h('div', { class: 'vwrap' }, v);
+    const bar = h('div', { class: 'row center cc-row' });
+    openModal(h('div', null, h('h2', null, 'Zip and Frill: The Nose Hum'), wrap, bar, h('p', { class: 'small' }, 'Optional cartoon, 2 min 27 s. Captions highlight each word as it is spoken.')), 'video');
+    loadCaptions().then((cues) => {
+      if (!cues || !cues.length) return;
+      const cp = captionPlayer(v, wrap, cues);
+      wrap.append(cp.overlay); bar.append(cp.toggle); if (cp.fsBtn) bar.append(cp.fsBtn);
+      window.__irCC = cp;
+    });
   };
   let deferredInstall = null;
   window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredInstall = e; });

@@ -17,7 +17,7 @@
         { who: 'zip', p: 'i1', show: 'apart' }, { who: 'frill', p: 'i2', show: 'apart' },
         { who: 'zip', p: 'i3', show: 'glue' }, { who: 'frill', p: 'i4', show: 'say' },
         { who: 'zip', p: 'i5b', show: 'mouth' }, { who: 'zip', p: 'i5', show: 'hum' },
-        { who: 'frill', p: 'v1', show: 'vowels' },
+        { who: 'frill', p: 'v1', show: 'vowels' }, { who: 'frill', p: 's1', show: 'swords' },
         { who: 'frill', p: 'i6', show: 'chips' }, { who: 'zip', p: 'i7', show: 'go' }
       ];
       let i = 0;
@@ -61,28 +61,31 @@
         if (b.show === 'mouth') {
           visual.append(mouthPic(), h('button', { class: 'btn', type: 'button', onclick: () => Snd.play(A.ng) }, icon('speaker'), 'Hear the ng sound'));
         }
-        if (b.show === 'vowels') {
-          const row = h('div', { class: 'vtiles' });
+        if (b.show === 'vowels' || b.show === 'swords') {
+          const sw = b.show === 'swords';           /* vowels: a/i/o/u + ng -> ang ing ong ung;  swords: s + ang/ing/ong/ung -> sang sing song sung */
+          const row = h('div', { class: 'vtiles' + (sw ? ' swordrow' : '') });
+          const play = (c) => (sw ? A.word('s' + c) : A.chunk(c));
           D.chunks.forEach((c) => {
             const col = IR.CHUNK_COLORS[c];
-            row.append(h('button', { class: 'vtile', type: 'button', style: 'border-color:' + col, 'aria-label': c, onclick: (e) => {
+            row.append(h('button', { class: 'vtile' + (sw ? ' stile' : ''), type: 'button', style: 'border-color:' + col, 'aria-label': sw ? 's' + c : c, onclick: (e) => {
               const el = e.currentTarget; el.classList.add('seen', 'pop'); setTimeout(() => el.classList.remove('pop'), 500);
-              Snd.play(A.chunk(c));
-            } }, h('span', { class: 'vv', style: 'color:' + col }, c[0]), h('span', { class: 'vng' }, 'ng'), h('span', { class: 'vsum' }, c)));
+              Snd.play(play(c));
+            } }, sw ? [h('span', { class: 'vv', style: 'color:#2B2540' }, 's'), h('span', { class: 'vv', style: 'color:' + col }, c[0]), h('span', { class: 'vng' }, 'ng'), h('span', { class: 'vsum' }, 's' + c)]
+                    : [h('span', { class: 'vv', style: 'color:' + col }, c[0]), h('span', { class: 'vng' }, 'ng'), h('span', { class: 'vsum' }, c)]));
           });
           const chant = h('button', { class: 'btn', type: 'button', onclick: async () => {
             Snd.stop(); const id = Snd.id; const tiles = $$('.vtile', row);
             for (let k = 0; k < D.chunks.length; k++) {      /* slow chant: one clear sound at a time, 480 ms gap, the matching tile lights up */
               if (Snd.id !== id) return; tiles.forEach((t) => t.classList.remove('lit')); tiles[k].classList.add('lit', 'seen');
-              await Snd.play(A.chunk(D.chunks[k]), { keep: true }); if (Snd.id !== id) return; await sleep(480);
+              await Snd.play(play(D.chunks[k]), { keep: true }); if (Snd.id !== id) return; await sleep(480);
             }
             tiles.forEach((t) => t.classList.remove('lit'));
-          } }, icon('speaker'), 'Hear them slowly');
+          } }, icon('speaker'), sw ? 'Hear them in a row' : 'Hear them slowly');
           visual.append(row, chant);
         }
         if (b.show === 'chips') {
           const row = h('div', { class: 'chips' });
-          D.introWords.forEach((w) => row.append(h('button', { class: 'chip', type: 'button', onclick: (e) => { e.currentTarget.classList.add('seen'); sayWord(w); } }, colorWord(w))));
+          D.mixWords.forEach((w) => row.append(h('button', { class: 'chip', type: 'button', onclick: (e) => { e.currentTarget.classList.add('seen'); sayWord(w); } }, colorWord(w))));
           visual.append(row);
         }
         if (b.show === 'go') visual.append(h('button', { class: 'btn ghost', type: 'button', onclick: () => IR.openCartoon() }, icon('play'), 'Watch the Zip and Frill cartoon (optional)'));

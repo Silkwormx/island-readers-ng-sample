@@ -655,6 +655,14 @@ window.IR_DATA = {
   "song",
   "sung"
  ],
+ "mixWords": [
+  "ring",
+  "king",
+  "long",
+  "hung",
+  "bang",
+  "wing"
+ ],
  "prompts": {
   "i1": {
    "voice": "Zip",
@@ -682,11 +690,15 @@ window.IR_DATA = {
   },
   "v1": {
    "voice": "Frill",
-   "text": "Here is a secret! You can put different vowels in front of ng. Each one makes a new glued sound. Tap each tile to hear it!"
+   "text": "Here is a secret! Put a vowel in front of ng. A, I, O, and U each make a new glued sound. Tap each tile to hear it!"
+  },
+  "s1": {
+   "voice": "Frill",
+   "text": "Now add an S in front! S plus ang makes sang. Tap each tile to read a new word!"
   },
   "i6": {
    "voice": "Frill",
-   "text": "Now we can read words that end with ng. Tap each one to hear it!"
+   "text": "Here are more words with ng. Tap each one to hear it!"
   },
   "i7": {
    "voice": "Zip",
