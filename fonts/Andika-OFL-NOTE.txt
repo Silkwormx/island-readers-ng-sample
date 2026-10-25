@@ -1,0 +1,2 @@
+Andika is copyright SIL International and is licensed under the SIL Open Font License 1.1 (https://openfontlicense.org).
+These files are Latin subsets of Andika Regular and Bold, converted to WOFF2.
