@@ -649,6 +649,12 @@ window.IR_DATA = {
   "ong",
   "ung"
  ],
+ "vowelOrder": [
+  "ing",
+  "ang",
+  "ong",
+  "ung"
+ ],
  "introWords": [
   "sang",
   "sing",
@@ -690,7 +696,7 @@ window.IR_DATA = {
   },
   "v1": {
    "voice": "Frill",
-   "text": "Here is a secret! Put a vowel in front of ng. A, I, O, and U each make a new glued sound. Tap each tile to hear it!"
+   "text": "When you put a vowel in front of ng, it makes another glued sound. Tap each tile to hear it!"
   },
   "s1": {
    "voice": "Frill",

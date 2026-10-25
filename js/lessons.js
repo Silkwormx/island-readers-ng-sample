@@ -65,7 +65,8 @@
           const sw = b.show === 'swords';           /* vowels: a/i/o/u + ng -> ang ing ong ung;  swords: s + ang/ing/ong/ung -> sang sing song sung */
           const row = h('div', { class: 'vtiles' + (sw ? ' swordrow' : '') });
           const play = (c) => (sw ? A.word('s' + c) : A.chunk(c));
-          D.chunks.forEach((c) => {
+          const ORDER = sw ? D.chunks : D.vowelOrder;
+          ORDER.forEach((c) => {
             const col = IR.CHUNK_COLORS[c];
             row.append(h('button', { class: 'vtile' + (sw ? ' stile' : ''), type: 'button', style: 'border-color:' + col, 'aria-label': sw ? 's' + c : c, onclick: (e) => {
               const el = e.currentTarget; el.classList.add('seen', 'pop'); setTimeout(() => el.classList.remove('pop'), 500);
@@ -75,9 +76,9 @@
           });
           const chant = h('button', { class: 'btn', type: 'button', onclick: async () => {
             Snd.stop(); const id = Snd.id; const tiles = $$('.vtile', row);
-            for (let k = 0; k < D.chunks.length; k++) {      /* slow chant: one clear sound at a time, 480 ms gap, the matching tile lights up */
+            for (let k = 0; k < ORDER.length; k++) {      /* slow chant: one clear sound at a time, 480 ms gap, the matching tile lights up */
               if (Snd.id !== id) return; tiles.forEach((t) => t.classList.remove('lit')); tiles[k].classList.add('lit', 'seen');
-              await Snd.play(play(D.chunks[k]), { keep: true }); if (Snd.id !== id) return; await sleep(480);
+              await Snd.play(play(ORDER[k]), { keep: true }); if (Snd.id !== id) return; await sleep(480);
             }
             tiles.forEach((t) => t.classList.remove('lit'));
           } }, icon('speaker'), sw ? 'Hear them in a row' : 'Hear them slowly');
