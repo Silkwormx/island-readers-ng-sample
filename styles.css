@@ -329,3 +329,11 @@ body.calm .strokemark.now .startdot circle{animation:none}
 .vtile.lit{background:#FFF1C4;transform:translateY(-4px) scale(1.06);box-shadow:0 9px 0 var(--ink)}
 .vtiles.swordrow{flex-wrap:nowrap;gap:.7rem}.vtile.stile{min-width:0;padding:.4rem .7rem}.vtile.stile .vv,.vtile.stile .vng{font-size:2.5rem}
 @media(max-width:520px){.vtile.stile .vv,.vtile.stile .vng{font-size:1.7rem}.vtile.stile{padding:.3rem .35rem}.vtile.stile .vsum{font-size:1rem}.vtiles.swordrow{gap:.4rem}}
+/* Back buttons: large, secondary, left of Next, 44px+ touch target */
+.btn.back{display:inline-flex;align-items:center;gap:.5rem;min-height:56px;min-width:44px;background:#fff;color:var(--ink);border:4px solid var(--ink);font-family:inherit}
+.btn.back .ico{width:1.3rem;height:1.3rem}
+.btn.small{min-height:44px}
+.btn:focus-visible{outline:4px solid #1FA6A6;outline-offset:3px}
+.intro-actions{display:flex;gap:1rem;justify-content:center;align-items:center}
+.lesson-nav{display:flex;justify-content:flex-start;padding:.6rem 1rem 1rem}
+.lessonscreen .lesson-nav{max-width:64rem;margin:0 auto;width:100%}

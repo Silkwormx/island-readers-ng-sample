@@ -25,8 +25,10 @@
       const visual = h('div', { class: 'visual' });
       const zip = h('img', { class: 'char zip', src: 'img/zip.webp', alt: 'Zip the gecko inventor' });
       const frill = h('img', { class: 'char frill', src: 'img/frill.webp', alt: 'Frill the nudibranch' });
-      const nextBtn = h('button', { class: 'btn big', type: 'button' }, 'Next', icon('next'));
-      const wrap = h('div', { class: 'intro' }, bubble, visual, h('div', { class: 'chars' }, zip, frill), h('div', { class: 'intro-actions' }, nextBtn));
+      const nextBtn = h('button', { class: 'btn big next', type: 'button' }, 'Next', icon('next'));
+      const backBtn = h('button', { class: 'btn big back', type: 'button', onclick: () => ctx.goBack() }, icon('back'), 'Back');   /* left of Next; step 1 -> the trail */
+      ctx.showNav(false); ctx.setBack(() => { if (i > 0) { i--; show(); return true; } return false; });
+      const wrap = h('div', { class: 'intro' }, bubble, visual, h('div', { class: 'chars' }, zip, frill), h('div', { class: 'intro-actions' }, backBtn, nextBtn));
       stage.append(wrap);
 
       const ngPill = (joined) => h('div', { class: 'ngpill' + (joined ? ' joined' : '') },
@@ -109,7 +111,7 @@
       const stage = ctx.stage; ctx.setInstr('', null);
       /* part A: heart-word peek (tap to hear, nothing to answer) */
       function heartPeek() {
-        ctx.progress(0); stage.innerHTML = '';
+        ctx.progress(0); stage.innerHTML = ''; ctx.showNav(true); ctx.setBack(null);
         ctx.setInstr('Tap each heart word to hear it.', 'p_listen1');
         const seen = new Set();
         const go = h('button', { class: 'btn big primary', type: 'button' }, 'Listen to the story', icon('next'));
@@ -127,7 +129,7 @@
       /* part B: the comic, read aloud. The child only listens and follows the highlight. */
       function storyListen() {
         stage.innerHTML = ''; ctx.setInstr('Listen to the story and follow along.', 'p_listen2');
-        const pages = D.story; let p = 0; let auto = true; let token = 0; let finished = false;
+        const pages = D.story; let p = 0; let auto = true; let token = 0; let finished = false; let left = false; ctx.showNav(false);
         const picEl = h('img', { class: 'panel', alt: '' });
         const sentEl = h('p', { class: 'sentence', 'aria-live': 'polite' });
         const dots = h('div', { class: 'pagedots' }, ...pages.map(() => h('i')));
@@ -139,7 +141,7 @@
           p = i; const pg = pages[p]; picEl.src = pg.img; sentEl.innerHTML = '';
           pg.words.forEach((w, k) => sentEl.append(h('span', { class: 'w', 'data-k': k }, w), ' '));
           $$('i', dots).forEach((d, k) => { d.classList.toggle('cur', k === p); d.classList.toggle('seen', k <= p); });
-          prev.disabled = p === 0; next.firstChild.textContent = p === pages.length - 1 ? 'Finish' : 'Next';
+          next.firstChild.textContent = p === pages.length - 1 ? 'Finish' : 'Next';
           ctx.progress(0.4 + 0.6 * p / (pages.length - 1));
         }
         function playPage() {
@@ -160,13 +162,13 @@
           if (finished) return; finished = true; token++; auto = false; Snd.stop(); ctx.progress(1);
           await sleep(500); if (ctx.scr.ok()) ctx.finish();
         }
-        prev.addEventListener('click', () => { if (p > 0) { token++; Snd.stop(); setPage(p - 1); if (auto) run(); else playPage(); } });
+        prev.addEventListener('click', () => { token++; Snd.stop(); if (p > 0) { setPage(p - 1); if (auto) run(); else playPage(); } else { left = true; heartPeek(); } });   /* first page: Back returns to the heart words */
         next.addEventListener('click', () => { if (p < pages.length - 1) { token++; Snd.stop(); setPage(p + 1); if (auto) run(); else playPage(); } else end(); });
         toggle.addEventListener('click', () => { auto = !auto; setToggle(); if (auto) run(); else { token++; Snd.stop(); } });
         stage.append(h('div', { class: 'activity story listenmode' },
           h('div', { class: 'panelwrap' }, picEl), h('div', { class: 'sentrow' }, sentEl), dots, h('div', { class: 'row' }, prev, toggle, next)));
         setPage(0); setToggle();
-        Snd.seq([A.prompt('p_listen2')], 200).then(() => { if (ctx.scr.ok() && auto) run(); });
+        Snd.seq([A.prompt('p_listen2')], 200).then(() => { if (ctx.scr.ok() && auto && !left) run(); });
       }
       heartPeek();
     }

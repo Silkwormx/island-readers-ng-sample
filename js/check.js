@@ -5,10 +5,10 @@
   const { D, h, $$, sleep, shuffle, icon, Snd, A, speakerBtn, colorWord, CHUNK_COLORS } = IR;
 
   function runCheck(ctx) {
-    const items = D.check; let q = 0, score = 0; const stage = ctx.stage; const miss = [];
+    const items = D.check; let q = 0, qtoken = 0; const stage = ctx.stage; const recs = [];   /* recs[q] = was the answer right; Back never throws recorded answers away */
     ctx.setInstr("Zip's check. Do your best. Take your time.", 'p_check');
     function finish() {
-      const S = IR.S();
+      const S = IR.S(); const score = recs.filter(Boolean).length;
       S.check.last = score; S.check.attempts = (S.check.attempts || 0) + 1;
       S.check.best = Math.max(S.check.best == null ? 0 : S.check.best, score);
       if (score >= 9) { S.sticker = true; S.badge = true; }
@@ -17,14 +17,14 @@
     }
     function step() {
       if (q >= items.length) return finish();
-      const it = items[q]; ctx.progress(q / items.length); stage.innerHTML = '';
+      const it = items[q]; const my = ++qtoken; ctx.progress(q / items.length); stage.innerHTML = '';
       const status = h('p', { class: 'status' }, 'Question ' + (q + 1) + ' of ' + items.length);
       let locked = false;
       const answered = async (ok, btn) => {
-        if (locked) return; locked = true; if (ok) score++; else miss.push(it.word || it.answer);
+        if (locked) return; locked = true; recs[q] = !!ok;
         btn.classList.add('picked'); $$('.choice', stage).forEach((b) => { if (b !== btn) b.classList.add('fade'); });
         status.textContent = 'Thank you! Next one.';
-        Snd.play(A.sfx.tap); await sleep(700); if (!ctx.scr.ok()) return; q++; step();
+        Snd.play(A.sfx.tap); const qq = q; await sleep(700); if (!ctx.scr.ok() || my !== qtoken || q !== qq) return; q++; step();
       };
       const body = h('div', { class: 'activity' });
       if (it.silly) body.append(h('div', { class: 'sillytag' }, h('img', { src: 'img/zip.webp', alt: '' }), h('span', null, 'Zip\u2019s silly word!')));
@@ -52,8 +52,14 @@
       body.append(status); stage.append(body);
     }
     ctx.setInstr('', null);
-    stage.append(h('div', { class: 'activity' }, h('p', { class: 'bigprompt' }, 'Zip\u2019s Check'), h('p', null, '10 quick questions. There is no rush!'),
-      h('button', { class: 'btn big primary', type: 'button', onclick: () => step() }, 'Start the check', icon('next'))));
+    let inQuestions = false;
+    ctx.setBack(() => { if (!inQuestions) return false; qtoken++; if (q > 0) { q--; step(); } else { inQuestions = false; intro(); } return true; });
+    function intro() {
+      stage.innerHTML = ''; ctx.progress(0); ctx.setInstr('', null);
+      stage.append(h('div', { class: 'activity' }, h('p', { class: 'bigprompt' }, 'Zip\u2019s Check'), h('p', null, '10 quick questions. There is no rush!'),
+        h('button', { class: 'btn big primary', type: 'button', onclick: () => { inQuestions = true; step(); } }, 'Start the check', icon('next'))));
+    }
+    intro();
     Snd.play(A.prompt('p_check'));
   }
 

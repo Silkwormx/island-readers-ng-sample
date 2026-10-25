@@ -169,7 +169,7 @@
     id: 'story', title: 'Now You Read It', blurb: 'Read the comic yourself, then read it 3 times', color: '#8E5BD6',
     run(ctx) {
       ctx.setInstr('Tap a speaker to hear a sentence. Then you read it!', 'p_story');
-      const pages = D.story; let p = 0; let reached = 0; const stage = ctx.stage; let auto = false; const S = IR.S();
+      const pages = D.story; let p = 0; let reached = 0; const stage = ctx.stage; let auto = false; const S = IR.S(); ctx.showNav(false);   /* this lesson has its own Back / Next row */
       const picEl = h('img', { class: 'panel', alt: '' });
       const sentEl = h('p', { class: 'sentence', 'aria-live': 'polite' });
       const dots = h('div', { class: 'pagedots' }, ...pages.map(() => h('i')));
@@ -189,7 +189,7 @@
         picEl.src = pg.img; sentEl.innerHTML = '';
         pg.words.forEach((w, k) => sentEl.append(h('span', { class: 'w', 'data-k': k }, w), ' '));
         $$('i', dots).forEach((d, k) => { d.classList.toggle('cur', k === p); d.classList.toggle('seen', k <= reached); });
-        prev.disabled = p === 0; next.firstChild.textContent = p === pages.length - 1 ? 'Finish' : 'Next';
+        next.firstChild.textContent = p === pages.length - 1 ? 'Finish' : 'Next';
         ctx.progress(reached / (pages.length - 1));
       }
       function playPage(keepAuto) {
@@ -199,7 +199,7 @@
           pg.t.forEach((tt, k) => { const el = ws[k]; if (!el) return; el.classList.toggle('hl', t >= tt[0] - 0.04 && t < (pg.t[k + 1] ? pg.t[k + 1][0] - 0.04 : 99)); el.classList.toggle('read', t >= tt[1]); });
         } }).then((ok) => { ws.forEach((e) => e.classList.remove('hl', 'read')); return ok; });
       }
-      prev.addEventListener('click', () => { auto = false; if (p > 0) { setPage(p - 1); playPage(false); } });
+      prev.addEventListener('click', () => { auto = false; if (p > 0) { setPage(p - 1); playPage(false); } else ctx.goBack(); });   /* first page: Back = previous lesson */
       next.addEventListener('click', async () => {
         auto = false;
         if (p < pages.length - 1) { setPage(p + 1); playPage(false); }

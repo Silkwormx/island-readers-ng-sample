@@ -234,8 +234,15 @@
         instrBox.innerHTML = ''; if (!text) { instrBox.style.display = 'none'; return; } instrBox.style.display = '';
         instrBox.append(IR.speakerBtn(() => Snd.play(A.prompt(pid.replace(/^p_/, 'p_'))), 'Hear the directions'), h('span', { class: 'itext' }, text));
       },
-      finish() { complete(); }
+      finish() { complete(); },
+      /* Back: a lesson registers setBack(fn) (fn returns true if it stepped back inside the lesson). Otherwise Back goes to the previous lesson, or the trail from the first one. */
+      setBack(fn) { backHandler = fn; },
+      goBack() { Snd.stop(); if (backHandler && backHandler()) return; location.hash = idx > 0 ? '#/lesson/' + idx : '#/island3'; },
+      showNav(on) { nav.style.display = on === false ? 'none' : ''; }
     };
+    let backHandler = null;
+    const backBtn0 = h('button', { class: 'btn big back', type: 'button', 'aria-label': idx > 0 ? 'Back to the previous lesson' : 'Back to the trail', onclick: () => ctx.goBack() }, icon('back'), 'Back');
+    const nav = h('div', { class: 'lesson-nav' }, backBtn0);
     function complete() {
       const stars = (L.id === 'listen' || L.id === 'intro') ? 3 : mistakes <= 1 ? 3 : mistakes <= 3 ? 2 : 1;
       const prev = S.lessons[L.id] || {};
@@ -244,7 +251,7 @@
       starTop.lastChild.textContent = IR.totalStars();
       const last = idx === LESSONS.length - 1;
       const nextBtn = h('button', { class: 'btn big primary', type: 'button', onclick: () => { location.hash = last ? '#/check' : '#/lesson/' + (idx + 2); } }, last ? 'On to Zip\u2019s Check' : 'Next lesson', icon('next'));
-      const backBtn = h('button', { class: 'btn big', type: 'button', onclick: () => { location.hash = '#/island3'; } }, 'Back to the trail');
+      const backBtn = h('button', { class: 'btn big back', type: 'button', onclick: () => { location.hash = '#/island3'; } }, icon('back'), 'Back to the trail');
       ctx.progress(1);
       const ov = h('div', { class: 'complete' }, h('div', { class: 'cbox' },
         IR.celebration(false),
@@ -253,7 +260,7 @@
         h('div', { class: 'row' }, backBtn, nextBtn)));
       app.append(ov); Snd.play(A.sfx.done);
     }
-    app.append(h('div', { class: 'screen lessonscreen', style: '--c:' + L.color }, h('header', { class: 'lesson-top' }, x, bar, starTop), instrBox, stage));
+    app.append(h('div', { class: 'screen lessonscreen', style: '--c:' + L.color }, h('header', { class: 'lesson-top' }, x, bar, starTop), instrBox, stage, nav));
     setBar(); L.run(ctx);
   }
 
@@ -262,7 +269,11 @@
     const fill = h('i'); const bar = h('div', { class: 'pbar' }, fill); const instrBox = h('div', { class: 'instr' });
     const x = h('button', { class: 'xbtn', type: 'button', 'aria-label': 'Back to the trail', onclick: () => { location.hash = '#/island3'; } }, icon('close'));
     const ctx = { scr, stage, miss() {}, progress(f) { fill.style.width = Math.round(((LESSONS.length + f) / (LESSONS.length + 1)) * 100) + '%'; }, setInstr(text, pid) { instrBox.innerHTML = ''; instrBox.style.display = text ? '' : 'none'; if (text) instrBox.append(IR.speakerBtn(() => Snd.play(A.prompt(pid)), 'Hear'), h('span', { class: 'itext' }, text)); }, finish() {} };
-    app.append(h('div', { class: 'screen lessonscreen checkscreen', style: '--c:#2b2540' }, h('header', { class: 'lesson-top' }, x, bar, h('div', { class: 'pill star' }, icon('star'), h('b', null, IR.totalStars()))), instrBox, stage));
+    let backHandler = null;
+    ctx.setBack = (fn) => { backHandler = fn; };
+    ctx.goBack = () => { Snd.stop(); if (backHandler && backHandler()) return; location.hash = '#/island3'; };
+    const nav = h('div', { class: 'lesson-nav' }, h('button', { class: 'btn big back', type: 'button', 'aria-label': 'Back', onclick: () => ctx.goBack() }, icon('back'), 'Back'));
+    app.append(h('div', { class: 'screen lessonscreen checkscreen', style: '--c:#2b2540' }, h('header', { class: 'lesson-top' }, x, bar, h('div', { class: 'pill star' }, icon('star'), h('b', null, IR.totalStars()))), instrBox, stage, nav));
     ctx.progress(0); IR.runCheck(ctx);
   }
 
