@@ -89,6 +89,7 @@
     const wrap = h('div', { class: 'vwrap' }, v);
     const bar = h('div', { class: 'row center cc-row' });
     openModal(h('div', null, h('h2', null, 'Zip and Frill: The Nose Hum'), wrap, bar, h('p', { class: 'small' }, 'Optional cartoon, 2 min 27 s. Captions highlight each word as it is spoken.')), 'video');
+    { const mb = $('.modal.video'); if (mb) mb.append(h('div', { class: 'row center', style: 'margin-top:.8rem' }, h('button', { class: 'btn big back', type: 'button', 'aria-label': 'Back', onclick: () => { $$('video', modalRoot).forEach((v) => v.pause()); modalRoot.innerHTML = ''; } }, icon('back'), 'Back'))); }
     loadCaptions().then((cues) => {
       if (!cues || !cues.length) return;
       const cp = captionPlayer(v, wrap, cues);
@@ -173,6 +174,36 @@
     if (S.badge) $('.island[data-n="3"]').append(h('span', { class: 'islandbadge', html: IR.ICON.badge }));
   }
 
+
+  /* ---------- "In this unit" progress sheet: quiet toggle on every unit screen, collapsed by default ---------- */
+  function unitSections() {
+    const S = IR.S();
+    return LESSONS.map((L, i) => ({ id: L.id, title: L.title, href: '#/lesson/' + (i + 1), done: !!(S.lessons[L.id] && S.lessons[L.id].done) }))
+      .concat([{ id: 'check', title: 'Zip\u2019s Check', href: '#/check', done: S.check.last != null }]);
+  }
+  function unitButton(currentId) {
+    const btn = h('button', { class: 'unitbtn', type: 'button', 'aria-haspopup': 'dialog', 'aria-expanded': 'false', 'aria-label': 'In this unit: show the lesson map' }, icon('list'), h('span', { class: 'ulab' }, 'In this unit'));
+    let open = null;
+    function close() { if (!open) return; document.removeEventListener('keydown', open.onKey); open.el.remove(); open = null; btn.setAttribute('aria-expanded', 'false'); btn.focus(); }
+    function show() {
+      if (open) return close();
+      const rows = unitSections().map((r) => {
+        const cur = r.id === currentId;
+        const status = r.done ? h('span', { class: 'ustar', 'aria-hidden': 'true' }, icon('star')) : cur ? h('span', { class: 'udot', 'aria-hidden': 'true' }, icon('next')) : h('span', { class: 'ucircle', 'aria-hidden': 'true' });
+        return h('li', null, h('button', { class: 'urow' + (cur ? ' cur' : '') + (r.done ? ' done' : ''), type: 'button', 'data-id': r.id, 'aria-current': cur ? 'step' : null,
+          'aria-label': r.title + ', ' + (r.done ? 'done' : cur ? 'you are here' : 'to do'),
+          onclick: () => { Snd.stop(); const same = cur; close(); if (!same) location.hash = r.href; } }, status, h('span', { class: 'ut' }, r.title)));
+      });
+      const x = h('button', { class: 'ush-x', type: 'button', 'aria-label': 'Close', onclick: () => close() }, icon('close'));
+      const el = h('div', { class: 'usheet-scrim', onclick: (e) => { if (e.target === e.currentTarget) close(); } },
+        h('div', { class: 'usheet', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'In this unit' }, h('div', { class: 'ush-head' }, h('h2', null, 'In this unit'), x), h('ol', { class: 'ush-list' }, ...rows)));
+      const onKey = (e) => { if (e.key === 'Escape') close(); };
+      document.addEventListener('keydown', onKey); modalRoot.append(el); open = { el, onKey }; btn.setAttribute('aria-expanded', 'true');
+      const first = el.querySelector('.urow.cur') || el.querySelector('.urow'); if (first) first.focus();
+    }
+    btn.addEventListener('click', show);
+    return btn;
+  }
   /* ---------- Island 3 trail ---------- */
   function lessonStars(id) { const l = IR.S().lessons[id]; return l ? l.stars || 0 : 0; }
   function allDone() { return LESSONS.every((l) => IR.S().lessons[l.id] && IR.S().lessons[l.id].done); }
@@ -211,7 +242,7 @@
       h('span', { class: 'num' }, '\u2605'), h('span', { class: 'ltxt' }, h('b', null, 'Zip\u2019s Check'), h('small', null, chk == null ? '10 questions \u00b7 ' + (ready ? 'ready!' : 'opens after the lessons') : 'Best: ' + chk + ' of 10')));
     const cartoon = h('button', { class: 'btn', type: 'button', onclick: () => IR.openCartoon() }, icon('play'), 'Watch the cartoon (optional)');
     app.append(h('div', { class: 'screen trailscreen' },
-      h('header', { class: 'top2' }, back, chips(), gearButton()), banner, trail,
+      h('header', { class: 'top2' }, back, chips(), unitButton(null), gearButton()), banner, trail,
       h('section', { class: 'inside' }, h('h2', null, 'Inside the ng stop'), h('p', { class: 'small' }, 'Short mini lessons. Each one takes 2 to 4 minutes.'), list, h('ol', { class: 'lessonlist single' }, h('li', null, checkBtn)), h('div', { class: 'row center' }, cartoon))));
   }
 
@@ -260,7 +291,7 @@
         h('div', { class: 'row' }, backBtn, nextBtn)));
       app.append(ov); Snd.play(A.sfx.done);
     }
-    app.append(h('div', { class: 'screen lessonscreen', style: '--c:' + L.color }, h('header', { class: 'lesson-top' }, x, bar, starTop), instrBox, stage, nav));
+    app.append(h('div', { class: 'screen lessonscreen', style: '--c:' + L.color }, h('header', { class: 'lesson-top' }, x, bar, starTop, unitButton(L.id)), instrBox, stage, nav));
     setBar(); L.run(ctx);
   }
 
@@ -273,7 +304,7 @@
     ctx.setBack = (fn) => { backHandler = fn; };
     ctx.goBack = () => { Snd.stop(); if (backHandler && backHandler()) return; location.hash = '#/island3'; };
     const nav = h('div', { class: 'lesson-nav' }, h('button', { class: 'btn big back', type: 'button', 'aria-label': 'Back', onclick: () => ctx.goBack() }, icon('back'), 'Back'));
-    app.append(h('div', { class: 'screen lessonscreen checkscreen', style: '--c:#2b2540' }, h('header', { class: 'lesson-top' }, x, bar, h('div', { class: 'pill star' }, icon('star'), h('b', null, IR.totalStars()))), instrBox, stage, nav));
+    app.append(h('div', { class: 'screen lessonscreen checkscreen', style: '--c:#2b2540' }, h('header', { class: 'lesson-top' }, x, bar, h('div', { class: 'pill star' }, icon('star'), h('b', null, IR.totalStars())), unitButton('check')), instrBox, stage, nav));
     ctx.progress(0); IR.runCheck(ctx);
   }
 
@@ -285,7 +316,7 @@
     if ((m = /^#\/lesson\/(\d+)/.exec(hash))) lessonScreen(parseInt(m[1], 10) - 1);
     else if (hash.startsWith('#/island3')) trailScreen();
     else if (hash.startsWith('#/check')) checkScreen();
-    else if (hash.startsWith('#/result')) { IR.newScreen(); app.append(h('div', { class: 'screen resultscreen' })); IR.renderResult($('.resultscreen')); }
+    else if (hash.startsWith('#/result')) { IR.newScreen(); app.append(h('div', { class: 'screen resultscreen' })); IR.renderResult($('.resultscreen')); $('.resultscreen').prepend(h('div', { class: 'unitbar' }, unitButton('check'))); }
     else homeScreen();
   }
   window.addEventListener('hashchange', route);
