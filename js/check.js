@@ -53,6 +53,14 @@
     }
     ctx.setInstr('', null);
     let inQuestions = false;
+    /* Next = skip ahead: moves to the next question WITHOUT scoring or recording anything (unanswered stays not-yet-answered); on the last question it opens the result only if every question was answered, else it returns to the trail */
+    ctx.setNext(() => {
+      if (!inQuestions) { inQuestions = true; step(); return true; }
+      qtoken++;
+      if (q < items.length - 1) { q++; step(); return true; }
+      if (items.every((_, k) => recs[k] !== undefined)) { finish(); return true; }
+      return false;
+    });
     ctx.setBack(() => { if (!inQuestions) return false; qtoken++; if (q > 0) { q--; step(); } else { inQuestions = false; intro(); } return true; });
     function intro() {
       stage.innerHTML = ''; ctx.progress(0); ctx.setInstr('', null);
@@ -66,9 +74,9 @@
   function renderResult(root) {
     const S = IR.S(); const score = S.check.last == null ? 0 : S.check.last;
     const wrap = h('div', { class: 'result' });
-    const home = h('button', { class: 'btn big primary', type: 'button', onclick: () => { location.hash = '#/home'; } }, 'See the sky map');
-    const trail = h('button', { class: 'btn big', type: 'button', onclick: () => { location.hash = '#/island3'; } }, 'Back to the trail');
-    const again = h('button', { class: 'btn big', type: 'button', onclick: () => { location.hash = '#/check'; } }, 'Try the check again');
+    const home = h('button', { class: 'btn big primary next', type: 'button', onclick: () => { location.hash = '#/home'; } }, 'See the sky map');
+    const trail = h('button', { class: 'btn big back', type: 'button', onclick: () => { location.hash = '#/island3'; } }, icon('back'), 'Back to the trail');
+    const again = h('button', { class: 'btn big next', type: 'button', onclick: () => { location.hash = '#/check'; } }, 'Try the check again');
     if (score < 7) wrap.append(h('img', { class: 'char zip big', src: 'img/zip.webp', alt: 'Zip' }));
     if (score >= 9) {
       wrap.append(h('div', { class: 'badgeart', html: IR.ICON.badge }),

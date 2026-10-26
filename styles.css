@@ -359,3 +359,32 @@ body:not(.calm) .usheet{animation:ushup .22s ease-out}
 .urow .ustar .ico{width:2rem;height:2rem;color:#F4B63F}
 .urow .udot{border-radius:50%;background:#1FA6A6;color:#fff}.urow .udot .ico{width:1.1rem;height:1.1rem}
 .urow .ucircle{border-radius:50%;border:3px solid #b9ad92;background:transparent}
+
+/* ---- fix pass 5: Back + Next together, Story Time controls ---- */
+.lesson-nav{justify-content:center;gap:1rem;flex-wrap:wrap}
+.lesson-nav .btn{min-width:9.5rem}
+.trail-nav{max-width:64rem;margin:0 auto;padding:1rem 1rem 2rem}
+.modal .row.center .btn.big{min-width:8.5rem}
+.listenmode .story-play{font-size:1.5rem;min-height:5rem;padding:.8rem 2.6rem;min-width:15rem}
+.listenmode .story-play svg{width:1.6em;height:1.6em}
+.listenmode .story-ctl{gap:.8rem;flex-wrap:wrap}
+.listenmode .story-ctl .btn{min-height:4rem;font-size:1.05rem;padding:.6rem 1.2rem}
+.listenmode .story-ctl .btn:disabled{opacity:.4}
+.listenmode .story-ctl .btn svg{width:1.2em;height:1.2em}
+.stage:has(.listenmode){align-items:flex-start;padding-bottom:.6rem}
+.listenmode .panel{max-height:25vh}
+.listenmode .sentence{font-size:1.9rem;line-height:1.35}
+.listenmode .story-play{min-height:4.2rem;font-size:1.4rem}
+.listenmode .story-ctl .btn{min-height:3.4rem}
+.listenmode .pagedots{margin:.2rem 0}
+.listenmode .story-ctl{gap:.6rem;align-items:center}
+.listenmode .story-ctl .btn{min-height:3.4rem;padding:.5rem 1rem;font-size:1rem}
+.listenmode .story-ctl .story-play{min-width:12.5rem;min-height:4.4rem;font-size:1.35rem}
+.activity.listenmode{max-width:62rem;width:100%}
+.listenmode .sentrow{max-width:46rem;margin-left:auto;margin-right:auto}
+@media (max-width:760px){.listenmode .story-ctl .btn{font-size:.95rem;padding:.4rem .7rem}.listenmode .story-ctl .story-play{min-width:10rem}}
+.listenmode .story-ctl{flex-wrap:nowrap;gap:.5rem}
+.listenmode .story-ctl .btn{font-size:.95rem;padding:.4rem .8rem;white-space:nowrap;min-width:0}
+.listenmode .story-ctl .story-play{min-width:11rem;font-size:1.3rem}
+@media (max-width:860px){.listenmode .story-ctl{flex-wrap:wrap;justify-content:center}}
+.listenmode .sentence{line-height:1.55}

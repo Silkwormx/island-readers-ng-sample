@@ -89,7 +89,7 @@
     const wrap = h('div', { class: 'vwrap' }, v);
     const bar = h('div', { class: 'row center cc-row' });
     openModal(h('div', null, h('h2', null, 'Zip and Frill: The Nose Hum'), wrap, bar, h('p', { class: 'small' }, 'Optional cartoon, 2 min 27 s. Captions highlight each word as it is spoken.')), 'video');
-    { const mb = $('.modal.video'); if (mb) mb.append(h('div', { class: 'row center', style: 'margin-top:.8rem' }, h('button', { class: 'btn big back', type: 'button', 'aria-label': 'Back', onclick: () => { $$('video', modalRoot).forEach((v) => v.pause()); modalRoot.innerHTML = ''; } }, icon('back'), 'Back'))); }
+    { const mb = $('.modal.video'); if (mb) mb.append(h('div', { class: 'row center', style: 'margin-top:.8rem' }, h('button', { class: 'btn big back', type: 'button', 'aria-label': 'Back', onclick: () => { $$('video', modalRoot).forEach((v) => v.pause()); modalRoot.innerHTML = ''; } }, icon('back'), 'Back'), h('button', { class: 'btn big next', type: 'button', 'aria-label': 'Next: start the lessons', onclick: () => { $$('video', modalRoot).forEach((v) => v.pause()); modalRoot.innerHTML = ''; const n = nextLessonIdx(); location.hash = n < 0 ? '#/check' : '#/lesson/' + (n + 1); } }, 'Next', icon('next')))); }
     loadCaptions().then((cues) => {
       if (!cues || !cues.length) return;
       const cp = captionPlayer(v, wrap, cues);
@@ -167,7 +167,7 @@
     // open scrolled to Island 3
     requestAnimationFrame(() => {
       const sc = $('.home'); const y = pos[3].y - 120;
-      sc.scrollTop = Math.max(0, y);
+      if (sc) sc.scrollTop = Math.max(0, y);
     });
     if (S.badge) map.append(h('div', { class: 'lit-note', style: `top:${pos[3].y - 56}px;left:72%` }, 'The bridge to Island 4 is lit!'));
     if (S.sticker) $('.island[data-n="3"]').append(h('span', { class: 'sticker', 'aria-label': 'ng sticker earned' }, 'ng'));
@@ -243,7 +243,10 @@
     const cartoon = h('button', { class: 'btn', type: 'button', onclick: () => IR.openCartoon() }, icon('play'), 'Watch the cartoon (optional)');
     app.append(h('div', { class: 'screen trailscreen' },
       h('header', { class: 'top2' }, back, chips(), unitButton(null), gearButton()), banner, trail,
-      h('section', { class: 'inside' }, h('h2', null, 'Inside the ng stop'), h('p', { class: 'small' }, 'Short mini lessons. Each one takes 2 to 4 minutes.'), list, h('ol', { class: 'lessonlist single' }, h('li', null, checkBtn)), h('div', { class: 'row center' }, cartoon))));
+      h('section', { class: 'inside' }, h('h2', null, 'Inside the ng stop'), h('p', { class: 'small' }, 'Short mini lessons. Each one takes 2 to 4 minutes.'), list, h('ol', { class: 'lessonlist single' }, h('li', null, checkBtn)), h('div', { class: 'row center' }, cartoon)),
+      h('div', { class: 'lesson-nav trail-nav' },
+        h('button', { class: 'btn big back', type: 'button', 'aria-label': 'Back to the sky map', onclick: () => { location.hash = '#/home'; } }, icon('back'), 'Back'),
+        h('button', { class: 'btn big next', type: 'button', 'aria-label': ni < 0 ? 'Next: Zip\u2019s Check' : 'Next: ' + LESSONS[ni].title, onclick: () => { location.hash = ni < 0 ? (ready ? '#/check' : '#/lesson/' + LESSONS.length) : '#/lesson/' + (ni + 1); } }, 'Next', icon('next')))));
   }
 
   /* ---------- lesson shell ---------- */
@@ -269,11 +272,15 @@
       /* Back: a lesson registers setBack(fn) (fn returns true if it stepped back inside the lesson). Otherwise Back goes to the previous lesson, or the trail from the first one. */
       setBack(fn) { backHandler = fn; },
       goBack() { Snd.stop(); if (backHandler && backHandler()) return; location.hash = idx > 0 ? '#/lesson/' + idx : '#/island3'; },
+      /* Next: a lesson may register setNext(fn) (fn returns true if it stepped forward inside the lesson). Otherwise Next SKIPS AHEAD to the next mini lesson (or Zip's Check) and never marks this one complete. */
+      setNext(fn) { nextHandler = fn; },
+      goNext() { Snd.stop(); if (nextHandler && nextHandler()) return; location.hash = idx === LESSONS.length - 1 ? '#/check' : '#/lesson/' + (idx + 2); },
       showNav(on) { nav.style.display = on === false ? 'none' : ''; }
     };
-    let backHandler = null;
+    let backHandler = null; let nextHandler = null;
     const backBtn0 = h('button', { class: 'btn big back', type: 'button', 'aria-label': idx > 0 ? 'Back to the previous lesson' : 'Back to the trail', onclick: () => ctx.goBack() }, icon('back'), 'Back');
-    const nav = h('div', { class: 'lesson-nav' }, backBtn0);
+    const nextBtn0 = h('button', { class: 'btn big next', type: 'button', 'aria-label': idx === LESSONS.length - 1 ? 'Next: Zip\u2019s Check' : 'Next lesson', onclick: () => ctx.goNext() }, 'Next', icon('next'));
+    const nav = h('div', { class: 'lesson-nav' }, backBtn0, nextBtn0);
     function complete() {
       const stars = (L.id === 'listen' || L.id === 'intro') ? 3 : mistakes <= 1 ? 3 : mistakes <= 3 ? 2 : 1;
       const prev = S.lessons[L.id] || {};
@@ -303,7 +310,10 @@
     let backHandler = null;
     ctx.setBack = (fn) => { backHandler = fn; };
     ctx.goBack = () => { Snd.stop(); if (backHandler && backHandler()) return; location.hash = '#/island3'; };
-    const nav = h('div', { class: 'lesson-nav' }, h('button', { class: 'btn big back', type: 'button', 'aria-label': 'Back', onclick: () => ctx.goBack() }, icon('back'), 'Back'));
+    let nextHandler = null; ctx.setNext = (fn) => { nextHandler = fn; };
+    ctx.goNext = () => { Snd.stop(); if (nextHandler && nextHandler()) return; location.hash = '#/island3'; };
+    const nav = h('div', { class: 'lesson-nav' }, h('button', { class: 'btn big back', type: 'button', 'aria-label': 'Back', onclick: () => ctx.goBack() }, icon('back'), 'Back'),
+      h('button', { class: 'btn big next', type: 'button', 'aria-label': 'Next question', onclick: () => ctx.goNext() }, 'Next', icon('next')));
     app.append(h('div', { class: 'screen lessonscreen checkscreen', style: '--c:#2b2540' }, h('header', { class: 'lesson-top' }, x, bar, h('div', { class: 'pill star' }, icon('star'), h('b', null, IR.totalStars())), unitButton('check')), instrBox, stage, nav));
     ctx.progress(0); IR.runCheck(ctx);
   }
