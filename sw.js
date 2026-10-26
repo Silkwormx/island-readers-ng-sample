@@ -1,5 +1,5 @@
 /* Island Readers sample service worker: precache everything, serve offline, support media range requests. */
-const CACHE = 'ir-ng-sample-c25d9517b3';
+const CACHE = 'ir-ng-sample-830bf9640e';
 const ASSETS = [
  "./",
  "./index.html",

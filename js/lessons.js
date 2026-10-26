@@ -111,7 +111,7 @@
       const stage = ctx.stage; ctx.setInstr('', null);
       /* part A: heart-word peek (tap to hear, nothing to answer) */
       function heartPeek() {
-        ctx.progress(0); stage.innerHTML = ''; ctx.showNav(true); ctx.setBack(null); ctx.setNext(() => { Snd.stop(); storyListen(); return true; });
+        ctx.progress(0); stage.innerHTML = ''; ctx.showNav(true); ctx.setNextLabel('Next'); ctx.setBack(null); ctx.setNext(() => { Snd.stop(); storyListen(); return true; });
         ctx.setInstr('Tap each heart word to hear it.', 'p_listen1');
         const seen = new Set();
         const go = h('button', { class: 'btn big primary', type: 'button' }, 'Listen to the story', icon('next'));
@@ -124,14 +124,12 @@
         });
         go.addEventListener('click', () => { Snd.stop(); storyListen(); });
         stage.append(h('div', { class: 'activity' }, h('p', { class: 'bigprompt' }, 'Heart words'), row, h('div', { class: 'row center' }, go)));
-        Snd.seq([A.prompt('p_listen1')], 100);
       }
       /* part B: the comic, read aloud. NOTHING plays until the child presses the big Play button. Then: Pause/Resume, Replay from start, previous/next sentence. */
       function storyListen() {
         stage.innerHTML = ''; ctx.setInstr('Listen to the story and follow along.', 'p_listen2');
         const pages = D.story; let p = 0; let auto = false; let token = 0; let finished = false; ctx.showNav(true);
         ctx.setBack(() => { token++; auto = false; Snd.stop(); heartPeek(); return true; });      /* Back = the heart words */
-        ctx.setNext(null);                                                                          /* Next = skip ahead to the next mini lesson (does NOT complete this one) */
         const picEl = h('img', { class: 'panel', alt: '' });
         const sentEl = h('p', { class: 'sentence', 'aria-live': 'polite' });
         const dots = h('div', { class: 'pagedots' }, ...pages.map(() => h('i')));
@@ -139,38 +137,35 @@
         const prev = h('button', { class: 'btn big story-prev', type: 'button' }, icon('back'), 'Previous sentence');
         const replay = h('button', { class: 'btn big story-replay', type: 'button' }, icon('replay'), 'Replay from start');
         const next = h('button', { class: 'btn big story-next', type: 'button' }, 'Next sentence', icon('next'));
-        let started = false;
-        const setPlay = () => { play.innerHTML = ''; play.setAttribute('aria-pressed', auto ? 'true' : 'false'); play.append(icon(auto ? 'pause' : 'play'), auto ? 'Pause' : (started ? 'Resume' : 'Play the story')); play.classList.toggle('playing', auto); };
+        let started = false; const heard = new Set();     /* sentences listened to the END; only a full listen can finish the lesson */
+        const allHeard = () => heard.size >= pages.length;
+        const setPlay = () => { play.innerHTML = ''; play.setAttribute('aria-pressed', auto ? 'true' : 'false'); play.append(icon(auto ? 'pause' : 'play'), auto ? 'Pause' : (started === 'paused' ? 'Resume' : (started ? 'Play' : 'Play the story'))); play.classList.toggle('playing', auto); };
         function setPage(i) {
           p = i; const pg = pages[p]; picEl.src = pg.img; sentEl.innerHTML = '';
           pg.words.forEach((w, k) => sentEl.append(h('span', { class: 'w', 'data-k': k }, w), ' '));
-          $$('i', dots).forEach((d, k) => { d.classList.toggle('cur', k === p); d.classList.toggle('seen', k < p); });
-          prev.disabled = p === 0; next.disabled = p === pages.length - 1; prev.setAttribute('aria-disabled', String(p === 0)); next.setAttribute('aria-disabled', String(p === pages.length - 1));
-          ctx.progress(0.4 + 0.6 * p / (pages.length - 1));
+          $$('i', dots).forEach((d, k) => { d.classList.toggle('cur', k === p); d.classList.toggle('seen', heard.has(k)); });
+          const lastP = p === pages.length - 1; next.innerHTML = ''; next.append(lastP && allHeard() ? 'Finish' : 'Next sentence', icon('next'));
+          prev.disabled = p === 0; next.disabled = lastP && !allHeard(); prev.setAttribute('aria-disabled', String(prev.disabled)); next.setAttribute('aria-disabled', String(next.disabled));
+          ctx.setNextLabel(allHeard() ? 'Finish' : 'Next');
+          ctx.progress(0.4 + 0.6 * heard.size / pages.length);
         }
-        function playPage() {
-          const pg = pages[p]; const ws = $$('.w', sentEl);
+        function playPage() {           /* ONE sentence, only when the student presses Play. It never moves on by itself. */
+          const pg = pages[p]; const ws = $$('.w', sentEl); const my = ++token; auto = true; setPlay();
           return Snd.play('audio/s_' + pg.n + '.mp3', { onTime: (t) => {
             pg.t.forEach((tt, k) => { const el = ws[k]; if (!el) return; el.classList.toggle('hl', t >= tt[0] - 0.04 && t < (pg.t[k + 1] ? pg.t[k + 1][0] - 0.04 : 99)); el.classList.toggle('read', t >= tt[1]); });
-          } }).then((ok) => { ws.forEach((e) => e.classList.remove('hl', 'read')); return ok; });
+          } }).then((ok) => {
+            ws.forEach((e) => e.classList.remove('hl', 'read'));
+            if (my !== token || !ctx.scr.ok()) return ok;
+            auto = false; if (ok) { heard.add(pages.indexOf(pg)); started = true; } setPage(p); setPlay(); return ok;
+          });
         }
-        async function run() {          /* read aloud from the current sentence to the end, one sentence after another */
-          const my = ++token;
-          while (auto && my === token && ctx.scr.ok()) {
-            const ok = await playPage(); if (my !== token || !auto || !ctx.scr.ok()) return;
-            await sleep(500); if (my !== token || !auto || !ctx.scr.ok()) return;
-            if (p < pages.length - 1) setPage(p + 1); else { await end(); return; }
-          }
-        }
-        async function end() {          /* only a full listen to the last sentence completes the lesson */
-          if (finished) return; finished = true; token++; auto = false; setPlay(); Snd.stop(); ctx.progress(1);
-          await sleep(500); if (ctx.scr.ok()) ctx.finish();
-        }
-        const halt = () => { token++; Snd.stop(); };
-        play.addEventListener('click', () => { started = true; if (auto) { auto = false; halt(); setPlay(); } else { auto = true; setPlay(); run(); } });
-        replay.addEventListener('click', () => { halt(); started = true; setPage(0); auto = true; setPlay(); run(); });
-        prev.addEventListener('click', () => { if (p === 0) return; halt(); setPage(p - 1); if (auto) run(); else playPage(); });   /* paused: hear just this sentence */
-        next.addEventListener('click', () => { if (p >= pages.length - 1) return; halt(); setPage(p + 1); if (auto) run(); else playPage(); });
+        const halt = () => { token++; auto = false; Snd.stop(); };
+        const finishNow = () => { if (finished) return; finished = true; halt(); ctx.progress(1); ctx.finish(); };
+        ctx.setNext(() => { if (allHeard()) { finishNow(); return true; } return false; });
+        play.addEventListener('click', () => { if (auto) { halt(); started = 'paused'; setPlay(); } else { started = started || true; playPage(); } });
+        replay.addEventListener('click', () => { halt(); setPage(0); started = true; playPage(); });
+        prev.addEventListener('click', () => { if (p === 0) return; halt(); setPage(p - 1); setPlay(); });     /* silent: press Play to hear it */
+        next.addEventListener('click', () => { if (p >= pages.length - 1) { if (allHeard()) finishNow(); return; } halt(); setPage(p + 1); setPlay(); });
         stage.append(h('div', { class: 'activity story listenmode' },
           h('div', { class: 'panelwrap' }, picEl), h('div', { class: 'sentrow' }, sentEl), dots,
           h('div', { class: 'row center story-ctl' }, prev, play, next, replay)));
@@ -185,10 +180,13 @@
     id: 'hear', title: 'Hear and Pick', blurb: 'Listen, then tap the word', color: '#7E57C2',
     run(ctx) {
       ctx.setInstr('Listen. Tap the word you hear.', 'p_hear');
-      const rounds = D.hear; let r = 0;
+      const rounds = D.hear; let r = 0; const got = new Set();      /* items answered right; skipped items earn nothing */
       const stage = ctx.stage;
+      const nextOpen = () => { for (let k = 1; k <= rounds.length; k++) { const j = (r + k) % rounds.length; if (!got.has(j)) return j; } return -1; };
       async function round() {
-        const R = rounds[r]; ctx.progress(r / rounds.length);
+        const R = rounds[r]; ctx.progress(got.size / rounds.length);
+        ctx.setBack(() => { if (r > 0) { Snd.stop(); r--; round(); return true; } return false; });      /* Back = previous item, from item 1 the previous lesson */
+        ctx.setNext(() => { if (r < rounds.length - 1) { Snd.stop(); r++; round(); return true; } return false; });   /* Next = skip this item (no credit); after the last item = next mini lesson */
         stage.innerHTML = '';
         let misses = 0; let locked = false;
         const spk = speakerBtn(() => sayWord(R.word), 'Hear the word'); spk.classList.add('huge');
@@ -205,7 +203,7 @@
               await IR.ding(w);
               if (!ctx.scr.ok()) return;
               await sleep(500); if (!ctx.scr.ok()) return;
-              r++; if (r < rounds.length) round(); else { ctx.progress(1); ctx.finish(); }
+              got.add(r); const nx = got.size >= rounds.length ? -1 : nextOpen(); if (nx < 0) { ctx.progress(1); ctx.finish(); } else { r = nx; round(); }
             } else {
               misses++; ctx.miss(); b.classList.add('tried'); status.textContent = 'Not that one. Listen again.';
               await IR.tryAgain(A.word(R.word));
