@@ -12,6 +12,7 @@
       S.check.last = score; S.check.attempts = (S.check.attempts || 0) + 1;
       S.check.best = Math.max(S.check.best == null ? 0 : S.check.best, score);
       if (score >= 9) { S.sticker = true; S.badge = true; }
+      IR.recordActivity('check', score >= 9 ? 3 : score >= 7 ? 2 : 1);
       IR.touchStreak(); IR.save();
       location.hash = '#/result';
     }
@@ -80,7 +81,7 @@
     if (score < 7) wrap.append(h('img', { class: 'char zip big', src: 'img/zip.webp', alt: 'Zip' }));
     if (score >= 9) {
       wrap.append(h('div', { class: 'badgeart', html: IR.ICON.badge }),
-        h('h1', null, 'Island badge!'), h('p', { class: 'lead' }, 'The bridge lights up!'),
+        h('h1', null, 'Island badge!'), h('p', { class: 'lead' }, IR.unitComplete() ? 'The bridge lights up!' : 'Get every star to light the bridge.'),
         h('p', null, 'You got ' + score + ' out of 10. Your ng sticker is on the map.'),
         h('div', { class: 'bridge-demo' }, h('i'), h('i'), h('i'), h('i'), h('i')),
         h('div', { class: 'row' }, home, trail));

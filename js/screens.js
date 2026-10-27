@@ -5,11 +5,21 @@
   const { D, h, $, $$, sleep, icon, Snd, A, say } = IR;
   const app = $('#app'); const modalRoot = $('#modal-root');
   const LESSONS = IR.LESSONS;
-  const ISLANDS = [
-    [0, 'Sunrise Landing', 'Starter (optional)'], [1, 'Tide Pool Isle', 'Sounds + blends'], [2, 'Turtle Cove', 'FLOSS + digraphs'],
-    [3, 'Sanshin Isle', 'ng, nk + Review 1'], [4, 'Lantern Grove', 'Silent e'], [5, 'Fishing Boat Bay', 'Endings, -tch, -dge'],
-    [6, 'Mangrove Maze', 'y, -le + Review 2'], [7, 'Shisa Gate', 'r-controlled vowels'], [8, 'Kite Cliff', 'Vowel teams'],
-    [9, 'Blue Cave', 'Other vowels + Review 3'], [10, 'Treasure Summit', 'Prefixes, suffixes']
+  /* The whole world in order: Ground Level, Islands 1-10, two Review Reefs, four treasure boxes (after Islands 2, 4, 6, 8). Only the ng unit (Island 3) and the wooden chest are playable. */
+  const WORLD = [
+    { id: 'ground', kind: 'ground', title: 'Ground Level', sub: 'Where the journey starts' },
+    { id: 'i1', kind: 'island', n: 1, title: 'Blends and Floss' }, { id: 'i2', kind: 'island', n: 2, title: 'Digraphs' },
+    { id: 'chest1', kind: 'chest', style: 'wood', title: 'Wooden chest', sub: 'Level 1 \u00b7 Word games', href: '#/chest1' },
+    { id: 'i3', kind: 'island', n: 3, title: 'Glued Sounds', sub: 'ng, nk', href: '#/island3' },
+    { id: 'i4', kind: 'island', n: 4, title: 'Silent e and Word Endings' },
+    { id: 'chest2', kind: 'chest', style: 'shell', title: 'Seashell chest', sub: 'Level 2' },
+    { id: 'i5', kind: 'island', n: 5, title: 'Longer Words' }, { id: 'reef1', kind: 'reef', title: 'Review Reef', sub: 'After Island 5' },
+    { id: 'i6', kind: 'island', n: 6, title: 'Bossy r' },
+    { id: 'chest3', kind: 'chest', style: 'drum', title: 'Drum chest', sub: 'Level 3' },
+    { id: 'i7', kind: 'island', n: 7, title: 'Vowel Teams' }, { id: 'i8', kind: 'island', n: 8, title: 'Other Vowels' },
+    { id: 'chest4', kind: 'chest', style: 'gold', title: 'Golden chest', sub: 'Level 4' },
+    { id: 'i9', kind: 'island', n: 9, title: 'Word Parts' }, { id: 'i10', kind: 'island', n: 10, title: 'Spelling Patterns' },
+    { id: 'reef2', kind: 'reef', title: 'Review Reef', sub: 'After Island 10' }
   ];
 
   /* ---------- shared bits ---------- */
@@ -89,7 +99,7 @@
     const wrap = h('div', { class: 'vwrap' }, v);
     const bar = h('div', { class: 'row center cc-row' });
     openModal(h('div', null, h('h2', null, 'Zip and Frill: The Nose Hum'), wrap, bar, h('p', { class: 'small' }, 'Optional cartoon, 2 min 27 s. Captions highlight each word as it is spoken.')), 'video');
-    { const mb = $('.modal.video'); if (mb) mb.append(h('div', { class: 'row center', style: 'margin-top:.8rem' }, h('button', { class: 'btn big back', type: 'button', 'aria-label': 'Back', onclick: () => { $$('video', modalRoot).forEach((v) => v.pause()); modalRoot.innerHTML = ''; } }, icon('back'), 'Back'), h('button', { class: 'btn big next', type: 'button', 'aria-label': 'Next: start the lessons', onclick: () => { $$('video', modalRoot).forEach((v) => v.pause()); modalRoot.innerHTML = ''; const n = nextLessonIdx(); location.hash = n < 0 ? '#/check' : '#/lesson/' + (n + 1); } }, 'Next', icon('next')))); }
+    { const mb = $('.modal.video'); if (mb) mb.append(h('div', { class: 'row center', style: 'margin-top:.8rem' }, h('button', { class: 'btn big back', type: 'button', 'aria-label': 'Back', onclick: () => { $$('video', modalRoot).forEach((v) => v.pause()); modalRoot.innerHTML = ''; } }, icon('back'), 'Back'), h('button', { class: 'btn big next', type: 'button', 'aria-label': 'Next: start the lessons', onclick: () => { $$('video', modalRoot).forEach((v) => v.pause()); modalRoot.innerHTML = ''; const n = nextUp(); location.hash = n ? n.href : '#/home'; } }, 'Next', icon('next')))); }
     loadCaptions().then((cues) => {
       if (!cues || !cues.length) return;
       const cp = captionPlayer(v, wrap, cues);
@@ -125,75 +135,71 @@
       h('p', { class: 'small' }, 'The app cannot listen to a child read. Reading aloud stays with a grown-up. Check the isolated ng sound by ear before sharing.')));
   }
 
-  /* ---------- HOME: sky map ---------- */
+  /* ---------- HOME: the world map. Small part at a time: the current island is big, everything else is a folded, locked row. ---------- */
   function homeScreen() {
-    const S = IR.S(); const scr = IR.newScreen();
-    const head = h('header', { class: 'home-head' }, h('div', { class: 'logo' }, h('span', { class: 'logo-a' }, 'Island'), ' Readers'), chips(), gearButton());
-    const map = h('div', { class: 'skymap', id: 'skymap' });
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'bridges'); svg.setAttribute('aria-hidden', 'true');
-    map.append(svg);
-    const STEP = 250, TOPPAD = 160;
-    const total = ISLANDS.length;
-    map.style.height = (total * STEP + TOPPAD + 120) + 'px';
-    const pos = {};
-    ISLANDS.forEach(([n, name, sub]) => {
-      const y = (total - 1 - n) * STEP + TOPPAD; const xp = n % 2 === 0 ? 28 : 72; pos[n] = { y, xp };
-      const unlocked = n === 3;
-      const art = n === 3 ? h('img', { class: 'island3img', src: 'img/island3.webp', alt: '' }) : h('div', { class: 'islandart', html: IR.islandSVG(n) });
-      const btn = h('button', { class: 'island' + (unlocked ? ' open' : ' locked'), type: 'button', style: `top:${y}px;left:${xp}%`, 'data-n': n,
-        'aria-label': 'Island ' + n + ', ' + name + (unlocked ? '. Open.' : '. Coming soon.') },
-        art,
-        unlocked ? h('img', { class: 'zipmini', src: 'img/zip.webp', alt: '' }) : h('span', { class: 'lockbadge' }, icon('lock')),
-        h('span', { class: 'ilabel' }, h('b', null, 'Island ' + n), h('span', null, name), h('small', null, unlocked ? sub : 'Coming soon')));
-      btn.addEventListener('click', () => {
-        if (unlocked) location.hash = '#/island3';
-        else { toast('Zip says: Island ' + n + ' is coming soon! Finish Island 3 first.'); Snd.stop(); }
-      });
-      if (unlocked) btn.append(h('span', { class: 'here' }, 'Zip is here! Tap to play'));
-      map.append(btn);
-    });
-    function drawBridges() {
-      const w = map.clientWidth; svg.setAttribute('width', w); svg.setAttribute('height', map.clientHeight);
-      let d = '';
-      for (let n = 0; n < total - 1; n++) {
-        const a = pos[n], b = pos[n + 1]; const x1 = a.xp / 100 * w, y1 = a.y + 40, x2 = b.xp / 100 * w, y2 = b.y + 40;
-        const lit = n === 3 && S.badge; const my = (y1 + y2) / 2;
-        d += `<path d="M${x1} ${y1} C${x1} ${my}, ${x2} ${my}, ${x2} ${y2}" class="bridge ${lit ? 'lit' : ''}" fill="none"/>`;
+    const S = IR.S(); IR.newScreen();
+    const head = h('header', { class: 'home-head' }, h('div', { class: 'logo' }, h('span', { class: 'logo-a' }, 'Island'), ' Readers'), IR.ui.chips(), IR.ui.gearButton());
+    const doneN = unitSections().filter((r) => r.done).length; const complete = unitComplete();
+    const artFor = (w) => w.kind === 'chest' ? IR.chestSVG(w.style) : w.kind === 'reef' ? IR.reefSVG() : IR.islandSVG(w.kind === 'ground' ? 0 : w.n);
+    const list = h('ol', { class: 'worldlist' });
+    WORLD.forEach((w) => {
+      const playable = !!w.href; const lit = w.id === 'i4' && complete;
+      const label = (w.kind === 'island' ? 'Island ' + w.n + ': ' : '') + w.title;
+      if (w.id === 'i3') {
+        const card = h('div', { class: 'wnode current', 'data-n': 3, 'data-id': 'i3' },
+          h('img', { class: 'island3img', src: 'img/island3.webp', alt: '' }),
+          h('div', { class: 'cur-t' }, h('span', { class: 'cur-tag' }, 'You are here'), h('b', null, 'Island 3 \u00b7 Glued Sounds'), h('small', null, 'ng, nk \u00b7 the ng stop is ready to play'),
+            h('span', { class: 'cur-prog' }, doneN + ' of ' + unitSections().length + ' stars')),
+          h('button', { class: 'btn big primary', type: 'button', onclick: () => { location.hash = '#/island3'; } }, doneN === 0 ? 'Start here' : complete ? 'Play again' : 'Continue', icon('next')));
+        if (S.sticker) card.append(h('span', { class: 'sticker', 'aria-label': 'ng sticker earned' }, 'ng'));
+        list.append(h('li', { class: 'wrow cur' }, card)); return;
       }
-      svg.innerHTML = d;
-    }
-    app.append(h('div', { class: 'screen home' }, head, map));
-    drawBridges(); window.addEventListener('resize', drawBridges, { once: false });
-    // open scrolled to Island 3
-    requestAnimationFrame(() => {
-      const sc = $('.home'); const y = pos[3].y - 120;
-      if (sc) sc.scrollTop = Math.max(0, y);
+      const cls = 'wnode folded k-' + w.kind + (playable ? ' playable' : ' locked') + (lit ? ' lit' : '');
+      const side = playable ? h('span', { class: 'wside play' }, icon('play'), 'Open') : lit ? h('span', { class: 'wside' }, icon('star'), 'Unlocked') : h('span', { class: 'wside' }, icon('lock'), 'Coming soon');
+      const sub = lit ? 'Unlocked \u00b7 coming soon in the full app' : (w.sub || (playable ? '' : 'Coming soon'));
+      const btn = h('button', { class: cls, type: 'button', 'data-id': w.id, 'data-kind': w.kind, 'aria-label': label + '. ' + (playable ? 'Open.' : lit ? 'Unlocked, coming soon in the full app.' : 'Locked. Coming soon.') },
+        h('span', { class: 'wart', html: artFor(w) }), h('span', { class: 'wtxt' }, h('b', null, w.kind === 'island' ? 'Island ' + w.n : w.title), h('small', null, w.kind === 'island' ? w.title + (sub && sub !== 'Coming soon' ? ' \u00b7 ' + sub : '') : sub)), side);
+      btn.addEventListener('click', () => { if (playable) { location.hash = w.href; } else { Snd.stop(); toast(lit ? 'Island 4 is lit! It is coming soon in the full app.' : label + ' is coming soon!'); } });
+      list.append(h('li', { class: 'wrow' }, btn));
     });
-    if (S.badge) map.append(h('div', { class: 'lit-note', style: `top:${pos[3].y - 56}px;left:72%` }, 'The bridge to Island 4 is lit!'));
-    if (S.sticker) $('.island[data-n="3"]').append(h('span', { class: 'sticker', 'aria-label': 'ng sticker earned' }, 'ng'));
-    if (S.badge) $('.island[data-n="3"]').append(h('span', { class: 'islandbadge', html: IR.ICON.badge }));
+    const nav = h('div', { class: 'lesson-nav trail-nav' },
+      h('button', { class: 'btn big back', type: 'button', 'aria-label': 'Back to Island 3', onclick: () => { location.hash = '#/island3'; } }, icon('back'), 'Back'),
+      h('button', { class: 'btn big next', type: 'button', 'aria-label': 'Next: the wooden chest', onclick: () => { location.hash = '#/chest1'; } }, 'Next', icon('next')));
+    app.append(h('div', { class: 'screen home worldscreen' }, head, h('div', { class: 'worldwrap' }, h('h1', { class: 'worldtitle' }, 'World map'), h('p', { class: 'worldsub' }, 'Ground Level, 10 islands, 2 review reefs and 4 treasure boxes. Only Island 3 and the wooden chest are open for now.'), list), nav));
+    requestAnimationFrame(() => { const c = $('.wrow.cur'); if (c && c.scrollIntoView) c.scrollIntoView({ block: 'center' }); });
   }
 
 
   /* ---------- "In this unit" progress sheet: quiet toggle on every unit screen, collapsed by default ---------- */
+  /* The unit in its recommended order, in two groups. Numbers run 1-9 straight across both groups. */
+  const GROUPS = [{ id: 'lesson', title: 'Lesson', ids: ['intro', 'listen'] }, { id: 'activities', title: 'Activities', ids: ['hear', 'fish', 'build', 'trace', 'sentence', 'story', 'check'] }];
   function unitSections() {
-    const S = IR.S();
-    return LESSONS.map((L, i) => ({ id: L.id, title: L.title, href: '#/lesson/' + (i + 1), done: !!(S.lessons[L.id] && S.lessons[L.id].done) }))
-      .concat([{ id: 'check', title: 'Zip\u2019s Check', href: '#/check', done: S.check.last != null }]);
+    const items = LESSONS.map((L, i) => ({ id: L.id, title: L.title, blurb: L.blurb, href: '#/lesson/' + (i + 1), color: L.color }))
+      .concat([{ id: 'check', title: 'Zip\u2019s Check', blurb: '10 quick questions with Zip', href: '#/check', color: '#2b2540' }]);
+    items.forEach((r, i) => { r.num = i + 1; r.done = IR.isDone(r.id); r.stars = IR.activityStars(r.id); r.group = GROUPS.find((g) => g.ids.includes(r.id)).id; });
+    return items;
   }
+  const unitComplete = () => unitSections().every((r) => r.done);
+  IR.unitComplete = unitComplete;
+  const nextUp = () => unitSections().find((r) => !r.done) || null;
   function unitButton(currentId) {
     const btn = h('button', { class: 'unitbtn', type: 'button', 'aria-haspopup': 'dialog', 'aria-expanded': 'false', 'aria-label': 'In this unit: show the lesson map' }, icon('list'), h('span', { class: 'ulab' }, 'In this unit'));
     let open = null;
     function close() { if (!open) return; document.removeEventListener('keydown', open.onKey); open.el.remove(); open = null; btn.setAttribute('aria-expanded', 'false'); btn.focus(); }
     function show() {
       if (open) return close();
-      const rows = unitSections().map((r) => {
+      const secs = unitSections(); let lastG = null; const rows = [];
+      secs.forEach((r) => {
+        if (r.group !== lastG) { lastG = r.group; rows.push(h('li', { class: 'ugroup', 'aria-hidden': 'true' }, GROUPS.find((g) => g.id === r.group).title)); }
+        rows.push(rowFor(r));
+      });
+      function rowFor(r) {
         const cur = r.id === currentId;
         const status = r.done ? h('span', { class: 'ustar', 'aria-hidden': 'true' }, icon('star')) : cur ? h('span', { class: 'udot', 'aria-hidden': 'true' }, icon('next')) : h('span', { class: 'ucircle', 'aria-hidden': 'true' });
         return h('li', null, h('button', { class: 'urow' + (cur ? ' cur' : '') + (r.done ? ' done' : ''), type: 'button', 'data-id': r.id, 'aria-current': cur ? 'step' : null,
           'aria-label': r.title + ', ' + (r.done ? 'done' : cur ? 'you are here' : 'to do'),
           onclick: () => { Snd.stop(); const same = cur; close(); if (!same) location.hash = r.href; } }, status, h('span', { class: 'ut' }, r.title)));
-      });
+      }
       const x = h('button', { class: 'ush-x', type: 'button', 'aria-label': 'Close', onclick: () => close() }, icon('close'));
       const el = h('div', { class: 'usheet-scrim', onclick: (e) => { if (e.target === e.currentTarget) close(); } },
         h('div', { class: 'usheet', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'In this unit' }, h('div', { class: 'ush-head' }, h('h2', null, 'In this unit'), x), h('ol', { class: 'ush-list' }, ...rows)));
@@ -204,49 +210,44 @@
     btn.addEventListener('click', show);
     return btn;
   }
-  /* ---------- Island 3 trail ---------- */
-  function lessonStars(id) { const l = IR.S().lessons[id]; return l ? l.stars || 0 : 0; }
-  function allDone() { return LESSONS.every((l) => IR.S().lessons[l.id] && IR.S().lessons[l.id].done); }
-  function nextLessonIdx() { const i = LESSONS.findIndex((l) => !(IR.S().lessons[l.id] && IR.S().lessons[l.id].done)); return i; }
+  /* ---------- Unit page (opens the app): Start here, then the whole unit as one path ---------- */
   function trailScreen() {
     const S = IR.S(); IR.newScreen();
-    const done = LESSONS.filter((l) => S.lessons[l.id] && S.lessons[l.id].done).length;
-    const back = h('button', { class: 'back', type: 'button', onclick: () => { location.hash = '#/home'; } }, icon('back'), 'Sky map');
-    const banner = h('div', { class: 'banner' }, h('img', { src: 'img/island3_banner.jpg', alt: 'Sanshin Isle, a floating island with a red-tiled house' }),
-      h('div', { class: 'banner-t' }, h('b', null, 'Island 3 \u00b7 Sanshin Isle'), h('span', null, 'ng, nk and Review 1')));
-    const ni = nextLessonIdx();
-    const startLabel = done === 0 ? 'Start' : (done >= LESSONS.length ? 'Play again' : 'Continue');
-    const startBtn = h('button', { class: 'btn big primary', type: 'button', onclick: () => { location.hash = '#/lesson/' + ((ni < 0 ? 0 : ni) + 1); } }, startLabel, icon('next'));
-    const stop1 = h('div', { class: 'stop open' },
-      h('div', { class: 'stopn' }, 'Stop 1'), h('div', { class: 'stopname' }, 'ng'), h('div', { class: 'stopsub' }, 'ang \u00b7 ing \u00b7 ong \u00b7 ung'),
-      h('div', { class: 'stopprog' }, done + ' of ' + LESSONS.length + ' mini lessons'),
-      S.sticker ? h('div', { class: 'sticker big', 'aria-label': 'ng sticker' }, 'ng') : h('div', { class: 'stickerslot' }, 'sticker'),
+    const secs = unitSections(); const nx = nextUp(); const doneN = secs.filter((r) => r.done).length; const total = secs.length; const complete = doneN === total;
+    const back = h('button', { class: 'back', type: 'button', onclick: () => { location.hash = '#/home'; } }, icon('back'), 'World map');
+    const startLabel = doneN === 0 ? 'Start here' : complete ? 'Play again' : 'Continue';
+    const target = nx || secs[2];                       /* all done: replaying means the practice, never the lesson */
+    const startBtn = h('button', { class: 'btn big primary startbtn', type: 'button', onclick: () => { location.hash = target.href; } }, startLabel, icon('next'));
+    const hero = h('section', { class: 'unithero' },
+      h('div', { class: 'ut-title' }, h('span', { class: 'ut-isle' }, 'Island 3 \u00b7 ng'), h('h1', null, 'The ng sound')),
+      h('div', { class: 'ut-prog', 'aria-label': doneN + ' of ' + total + ' stars' }, ...secs.map((r) => h('i', { class: r.done ? 'on' : '' }, icon(r.done ? 'star' : 'starOutline'))), h('span', { class: 'ut-count' }, doneN + ' of ' + total)),
       startBtn);
-    const lockedStop = (n, name, sub) => h('div', { class: 'stop locked' }, h('div', { class: 'stopn' }, 'Stop ' + n), h('div', { class: 'stopname' }, name), h('div', { class: 'stopsub' }, sub), icon('lock', 'lk'), h('div', { class: 'soon' }, 'Coming soon'));
-    const trail = h('div', { class: 'trail' }, stop1, h('div', { class: 'conn' }), lockedStop(2, 'nk', 'ank \u00b7 ink \u00b7 onk \u00b7 unk'), h('div', { class: 'conn' }), lockedStop(3, 'Review 1', 'mixed practice'),
-      h('div', { class: 'conn' }),
-      h('div', { class: 'stop end' + (S.badge ? ' got' : '') }, h('div', { class: 'badgeart sm' + (S.badge ? '' : ' dim'), html: IR.ICON.badge }), h('div', { class: 'stopname sm' }, 'Island badge'),
-        h('div', { class: 'stopsub' }, S.badge ? 'Earned! Bridge to Island 4 is lit.' : 'Earn it with a 9 or 10 on the check')));
-    const open = S.settings.openAll;
-    const list = h('ol', { class: 'lessonlist' });
-    LESSONS.forEach((l, i) => {
-      const st = lessonStars(l.id); const isDone = S.lessons[l.id] && S.lessons[l.id].done;
-      const li = h('li', null, h('button', { class: 'lesson-item' + (isDone ? ' done' : '') + (i === ni ? ' next' : ''), type: 'button', style: '--c:' + l.color, onclick: () => { location.hash = '#/lesson/' + (i + 1); } },
-        h('span', { class: 'num' }, i + 1), h('span', { class: 'ltxt' }, h('b', null, l.title), h('small', null, l.blurb)),
-        h('span', { class: 'lstars', 'aria-label': st + ' of 3 stars' }, ...[1, 2, 3].map((k) => icon(k <= st ? 'star' : 'starOutline', k <= st ? 'on' : 'off')))));
-      list.append(li);
-    });
-    const ready = allDone() || open;
-    const chk = S.check.best;
-    const checkBtn = h('button', { class: 'lesson-item check' + (ready ? '' : ' disabled'), type: 'button', style: '--c:#2b2540', onclick: () => { if (ready) location.hash = '#/check'; else toast('Finish the 8 mini lessons first. You can do it!'); } },
-      h('span', { class: 'num' }, '\u2605'), h('span', { class: 'ltxt' }, h('b', null, 'Zip\u2019s Check'), h('small', null, chk == null ? '10 questions \u00b7 ' + (ready ? 'ready!' : 'opens after the lessons') : 'Best: ' + chk + ' of 10')));
+    function stopFor(r) {
+      const isLesson = r.group === 'lesson'; const isNext = nx && nx.id === r.id;
+      const side = r.done ? (isLesson ? 'Review lesson' : 'Play again') : isNext ? 'Next up' : (isLesson ? 'Lesson' : 'Play');
+      const card = h('button', { class: 'stopcard ' + (isLesson ? 'lessonstop' : 'gamestop') + (r.done ? ' done' : '') + (isNext ? ' nextup' : ''), type: 'button', 'data-id': r.id, 'data-group': r.group,
+        'aria-label': r.num + '. ' + r.title + '. ' + (isLesson ? 'Lesson. ' : 'Activity. ') + (r.done ? 'Done, star earned.' : isNext ? 'Next up.' : 'Not done yet.'), 'aria-current': isNext ? 'step' : null,
+        onclick: () => { Snd.stop(); location.hash = r.href; } },
+        h('span', { class: 'snum', 'aria-hidden': 'true' }, String(r.num)),
+        h('span', { class: 'sico', 'aria-hidden': 'true' }, icon(isLesson ? 'book' : 'play')),
+        h('span', { class: 'stxt' }, h('b', null, r.title), h('small', null, r.blurb)),
+        h('span', { class: 'sside' }, h('span', { class: 'sstar' + (r.done ? ' on' : ''), 'aria-hidden': 'true' }, icon(r.done ? 'star' : 'starOutline')), h('span', { class: 'slabel' }, side)));
+      return h('li', null, card);
+    }
+    const group = (g) => h('section', { class: 'ugrp ' + g.id },
+      h('h2', { class: 'ugrp-t' }, icon(g.id === 'lesson' ? 'book' : 'play'), g.title, h('small', null, g.id === 'lesson' ? 'Learn it once' : 'Play as often as you like')),
+      h('ol', { class: 'stoplist' }, ...secs.filter((r) => r.group === g.id).map(stopFor)));
+    const i4 = h('section', { class: 'island4 ' + (complete ? 'open' : 'locked'), 'aria-live': 'polite' },
+      h('span', { class: 'i4ico', 'aria-hidden': 'true' }, icon(complete ? 'star' : 'lock')),
+      h('span', { class: 'i4txt' }, h('b', null, 'Island 4'), h('small', null, complete ? 'Unlocked! The bridge is lit.' : 'Finish all stars to unlock')),
+      h('span', { class: 'i4count' }, doneN + ' of ' + total));
     const cartoon = h('button', { class: 'btn', type: 'button', onclick: () => IR.openCartoon() }, icon('play'), 'Watch the cartoon (optional)');
-    app.append(h('div', { class: 'screen trailscreen' },
-      h('header', { class: 'top2' }, back, chips(), unitButton(null), gearButton()), banner, trail,
-      h('section', { class: 'inside' }, h('h2', null, 'Inside the ng stop'), h('p', { class: 'small' }, 'Short mini lessons. Each one takes 2 to 4 minutes.'), list, h('ol', { class: 'lessonlist single' }, h('li', null, checkBtn)), h('div', { class: 'row center' }, cartoon)),
+    app.append(h('div', { class: 'screen trailscreen unitpage' },
+      h('header', { class: 'top2' }, back, chips(), unitButton(null), gearButton()),
+      h('div', { class: 'unitwrap' }, hero, group(GROUPS[0]), group(GROUPS[1]), i4, h('div', { class: 'row center' }, cartoon)),
       h('div', { class: 'lesson-nav trail-nav' },
-        h('button', { class: 'btn big back', type: 'button', 'aria-label': 'Back to the sky map', onclick: () => { location.hash = '#/home'; } }, icon('back'), 'Back'),
-        h('button', { class: 'btn big next', type: 'button', 'aria-label': ni < 0 ? 'Next: Zip\u2019s Check' : 'Next: ' + LESSONS[ni].title, onclick: () => { location.hash = ni < 0 ? (ready ? '#/check' : '#/lesson/' + LESSONS.length) : '#/lesson/' + (ni + 1); } }, 'Next', icon('next')))));
+        h('button', { class: 'btn big back', type: 'button', 'aria-label': 'Back to the world map', onclick: () => { location.hash = '#/home'; } }, icon('back'), 'Back'),
+        h('button', { class: 'btn big next', type: 'button', 'aria-label': nx ? 'Next: ' + nx.title : 'Next: the world map', onclick: () => { location.hash = nx ? nx.href : '#/home'; } }, 'Next', icon('next')))));
   }
 
   /* ---------- lesson shell ---------- */
@@ -286,6 +287,7 @@
       const stars = (L.id === 'listen' || L.id === 'intro') ? 3 : mistakes <= 1 ? 3 : mistakes <= 3 ? 2 : 1;
       const prev = S.lessons[L.id] || {};
       S.lessons[L.id] = { done: true, stars: Math.max(prev.stars || 0, stars), tries: (prev.tries || 0) + 1 };
+      IR.recordActivity(L.id, stars);
       IR.touchStreak(); IR.save();
       starTop.lastChild.textContent = IR.totalStars();
       const last = idx === LESSONS.length - 1;
@@ -319,12 +321,14 @@
     ctx.progress(0); IR.runCheck(ctx);
   }
 
+  IR.ui = { chips, gearButton, toast, modalRoot, app };
   /* ---------- router ---------- */
   function route() {
-    const hash = location.hash || '#/home'; modalRoot.innerHTML = '';
+    const hash = location.hash || '#/island3'; modalRoot.innerHTML = '';
     app.innerHTML = ''; window.scrollTo(0, 0);
     let m;
     if ((m = /^#\/lesson\/(\d+)/.exec(hash))) lessonScreen(parseInt(m[1], 10) - 1);
+    else if (hash.startsWith('#/chest1')) IR.chest.render(hash, app);
     else if (hash.startsWith('#/island3')) trailScreen();
     else if (hash.startsWith('#/check')) checkScreen();
     else if (hash.startsWith('#/result')) { IR.newScreen(); app.append(h('div', { class: 'screen resultscreen' })); IR.renderResult($('.resultscreen')); $('.resultscreen').prepend(h('div', { class: 'unitbar' }, unitButton('check'))); }

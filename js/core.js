@@ -52,6 +52,7 @@
     check: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg>',
     replay: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5V2L7 6.5 12 11V8a5 5 0 1 1-5 5H5a7 7 0 1 0 7-8z" fill="currentColor"/></svg>',
+    book: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5C10 5 7 4.6 4 5v13c3-.4 6 0 8 1.5 2-1.5 5-1.9 8-1.5V5c-3-.4-6 0-8 1.5z" fill="currentColor"/><path d="M12 6.5v13" stroke="#fff8e8" stroke-width="1.6"/></svg>',
     pause: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4.5" width="4.2" height="15" rx="1" fill="currentColor"/><rect x="13.8" y="4.5" width="4.2" height="15" rx="1" fill="currentColor"/></svg>',
     next: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     bucket: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16l-1.8 11.2a2 2 0 01-2 1.8H7.8a2 2 0 01-2-1.8z" fill="currentColor"/><path d="M7 8a5 5 0 0110 0" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
@@ -78,18 +79,36 @@
   /* ---------- persistent state (localStorage, with in-memory fallback) ---------- */
   const blank = () => ({
     v: 1, lessons: {}, check: { best: null, last: null, attempts: 0 }, sticker: false, badge: false,
-    streak: { count: 0, last: null, restWeek: null }, heart: {}, reads: {}, settings: { calm: false, openAll: false }
+    streak: { count: 0, last: null, restWeek: null }, heart: {}, reads: {}, settings: { calm: false, openAll: false },
+    /* The one clean progress record (ready for future per-student tracking; no accounts yet): activities[id] = { id, stars, completed, firstCompletedAt, lastCompletedAt, attempts } */
+    progress: { v: 1, studentId: null, unit: 'island3-ng', activities: {}, updatedAt: null }
   });
   let mem = null;
   function load() {
-    try { const r = localStorage.getItem(KEY); if (r) return Object.assign(blank(), JSON.parse(r)); } catch (e) { /* ignore */ }
+    try { const r = localStorage.getItem(KEY); if (r) return migrate(Object.assign(blank(), JSON.parse(r))); } catch (e) { /* ignore */ }
     return mem || blank();
+  }
+  function migrate(s) {          /* older saves (before the progress record) get one built from their lessons / check result */
+    if (!s.progress || !s.progress.activities) s.progress = blank().progress;
+    const now = new Date().toISOString();
+    for (const id in s.lessons) if (s.lessons[id] && s.lessons[id].done && !s.progress.activities[id]) s.progress.activities[id] = { id, stars: s.lessons[id].stars || 1, completed: true, firstCompletedAt: now, lastCompletedAt: now, attempts: s.lessons[id].tries || 1 };
+    if (s.check && s.check.last != null && !s.progress.activities.check) s.progress.activities.check = { id: 'check', stars: s.check.best >= 9 ? 3 : s.check.best >= 7 ? 2 : 1, completed: true, firstCompletedAt: now, lastCompletedAt: now, attempts: s.check.attempts || 1 };
+    return s;
   }
   let S = load();
   function save() {
     mem = S;
     try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* storage blocked: keep in memory */ }
   }
+  /* One call records a completed activity (a skipped or unfinished one is never recorded). */
+  function recordActivity(id, stars) {
+    const now = new Date().toISOString(); const P = S.progress; const prev = P.activities[id];
+    P.activities[id] = { id, stars: Math.max(prev ? prev.stars : 0, stars || 1), completed: true, firstCompletedAt: prev ? prev.firstCompletedAt : now, lastCompletedAt: now, attempts: (prev ? prev.attempts : 0) + 1 };
+    P.updatedAt = now; save();
+  }
+  const isDone = (id) => !!(S.progress.activities[id] && S.progress.activities[id].completed);
+  const activityStars = (id) => (S.progress.activities[id] ? S.progress.activities[id].stars : 0);
+  const progressRecord = () => JSON.parse(JSON.stringify(S.progress));
   function resetAll() { S = blank(); save(); applySettings(); }
   function dayNum(d) { return Math.floor((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())) / 86400000); }
   function isoWeekKey(d) {
@@ -116,12 +135,7 @@
     const diff = dayNum(new Date()) - st.last;
     return { count: st.count, active: diff <= 2 };
   }
-  function totalStars() {
-    let n = 0;
-    for (const k in S.lessons) n += S.lessons[k].stars || 0;
-    if (S.check.best != null) n += S.check.best >= 9 ? 3 : S.check.best >= 7 ? 2 : 1;
-    return n;
-  }
+  function totalStars() { let n = 0; for (const k in S.progress.activities) n += S.progress.activities[k].stars || 0; return n; }
   function applySettings() { document.body.classList.toggle('calm', !!S.settings.calm); }
 
   /* ---------- audio: recorded voice only ----------
@@ -221,5 +235,5 @@
   }
 
   window.IR = { celebration, ding, tryAgain, D, S: () => S, save, resetAll, load, h, $, $$, sleep, shuffle, pick, colorWord, icon, ICON, CHUNK_COLORS,
-    touchStreak, streakInfo, totalStars, applySettings, Snd, A, sayWord, newScreen, speakerBtn };
+    touchStreak, streakInfo, recordActivity, isDone, activityStars, progressRecord, totalStars, applySettings, Snd, A, sayWord, newScreen, speakerBtn };
 })();

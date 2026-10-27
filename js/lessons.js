@@ -118,7 +118,7 @@
         const row = h('div', { class: 'hearts' });
         D.heart.forEach((it) => {
           row.append(h('button', { class: 'heartchip', type: 'button', onclick: (e) => {
-            e.currentTarget.classList.add('seen'); seen.add(it.w); ctx.progress(0.4 * seen.size / D.heart.length);
+            e.currentTarget.classList.add('seen'); seen.add(it.w); IR.S().heart[it.w] = true; IR.save(); ctx.progress(0.4 * seen.size / D.heart.length);
             Snd.seq([A.word(it.w), 'audio/hx_' + it.w + '.mp3'], 200);
           } }, h('span', { class: 'heartmark', 'aria-hidden': 'true' }, '\u2665'), h('span', { class: 'word' }, it.w)));
         });

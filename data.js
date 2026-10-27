@@ -766,5 +766,37 @@ window.IR_DATA = {
    "voice": "Frill",
    "text": "Hum it again!"
   }
- }
+ },
+ "dolch": [
+  "a",
+  "and",
+  "big",
+  "blue",
+  "can",
+  "come",
+  "down",
+  "find",
+  "for",
+  "go",
+  "help",
+  "here",
+  "I",
+  "in",
+  "is",
+  "it",
+  "jump",
+  "little",
+  "look",
+  "me",
+  "my",
+  "not",
+  "play",
+  "red",
+  "run",
+  "see",
+  "the",
+  "to",
+  "we",
+  "you"
+ ]
 };
