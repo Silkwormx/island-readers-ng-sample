@@ -50,14 +50,50 @@
   const defs = `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="rock" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B49A7E"/><stop offset="1" stop-color="#7C6A5A"/></linearGradient></defs></svg>`;
   document.body.insertAdjacentHTML('afterbegin', defs);
   IR.islandSVG = islandSVG;
-  /* Four visibly different treasure boxes (shape + colour): wooden chest, seashell, drum chest, golden chest. And a Review Reef. */
-  const CHESTS = {
-    wood: '<rect x="14" y="36" width="72" height="34" rx="4" fill="#A9693B"/><path d="M14 38 Q50 6 86 38Z" fill="#C98349"/><path d="M14 38 Q50 6 86 38" fill="none" stroke="#6b4423" stroke-width="3"/><rect x="14" y="36" width="72" height="34" rx="4" fill="none" stroke="#6b4423" stroke-width="3"/><path d="M34 36v34M66 36v34" stroke="#5b5b66" stroke-width="5"/><path d="M26 24q-2 6-4 12M74 24q2 6 4 12" stroke="#5b5b66" stroke-width="4" fill="none"/><rect x="43" y="40" width="14" height="14" rx="3" fill="#F4B63F" stroke="#8a5a00" stroke-width="2"/><circle cx="50" cy="47" r="2.5" fill="#6b4423"/><path d="M20 46h8M20 56h8M72 46h8M72 56h8" stroke="#7a4a27" stroke-width="2"/>',
-    shell: '<ellipse cx="50" cy="70" rx="34" ry="6" fill="#E9D7AE"/><path d="M50 66 C14 62 8 30 22 20 Q50 4 78 20 C92 30 86 62 50 66Z" fill="#F7A8BE" stroke="#c4577a" stroke-width="3"/><path d="M50 66 L50 12 M50 66 L30 15 M50 66 L70 15 M50 66 L17 28 M50 66 L83 28 M50 66 L12 44 M50 66 L88 44" stroke="#d9728f" stroke-width="2.5" fill="none"/><path d="M38 68 h24 l-4 8 h-16z" fill="#F7A8BE" stroke="#c4577a" stroke-width="2.5"/><circle cx="50" cy="48" r="8" fill="#FFF6E6" stroke="#d8c9a8" stroke-width="2"/><circle cx="47.5" cy="45.5" r="2.4" fill="#fff"/>',
-    drum: '<ellipse cx="50" cy="66" rx="34" ry="9" fill="#9d2f1d"/><rect x="16" y="30" width="68" height="36" fill="#D9502B"/><ellipse cx="50" cy="30" rx="34" ry="11" fill="#F4D9A0" stroke="#9d2f1d" stroke-width="3"/><ellipse cx="50" cy="30" rx="22" ry="6.5" fill="none" stroke="#c99a52" stroke-width="2"/><path d="M16 38 L34 66 L50 38 L66 66 L84 38" fill="none" stroke="#FFE7A8" stroke-width="3.5" stroke-linejoin="round"/><ellipse cx="50" cy="66" rx="34" ry="9" fill="none" stroke="#9d2f1d" stroke-width="3"/><rect x="40" y="14" width="20" height="9" rx="3" fill="#F4B63F" stroke="#8a5a00" stroke-width="2"/><path d="M16 30v36M84 30v36" stroke="#9d2f1d" stroke-width="3"/>',
-    gold: '<rect x="12" y="36" width="76" height="34" rx="5" fill="#F4B63F"/><path d="M12 38 Q50 2 88 38Z" fill="#FFD25A"/><path d="M12 38 Q50 2 88 38" fill="none" stroke="#a86f00" stroke-width="3"/><rect x="12" y="36" width="76" height="34" rx="5" fill="none" stroke="#a86f00" stroke-width="3"/><path d="M12 52h76" stroke="#a86f00" stroke-width="3"/><circle cx="26" cy="44" r="4" fill="#E0457B"/><circle cx="74" cy="44" r="4" fill="#1FA6A6"/><circle cx="26" cy="62" r="4" fill="#1FA6A6"/><circle cx="74" cy="62" r="4" fill="#E0457B"/><path d="M42 40 L50 31 L58 40 L50 58Z" fill="#7E57C2" stroke="#4b2d8a" stroke-width="2.5" stroke-linejoin="round"/><path d="M30 24l-3-8 7 4M70 24l3-8-7 4M50 10l-3-7 6 0z" stroke="#FFF3B0" stroke-width="2.5" fill="none" stroke-linecap="round"/>'
-  };
-  IR.chestSVG = (style) => `<svg viewBox="0 0 100 80" class="chestsvg" aria-hidden="true">${CHESTS[style] || CHESTS.wood}</svg>`;
-  IR.reefSVG = () => '<svg viewBox="0 0 100 80" class="chestsvg" aria-hidden="true"><ellipse cx="50" cy="68" rx="42" ry="9" fill="#E9D7AE"/><path d="M26 68 V42 M26 54 l-10 -10 M26 48 l9 -9" stroke="#F58BA8" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M52 68 V26 M52 50 l-13 -12 M52 40 l12 -12" stroke="#E0457B" stroke-width="8" stroke-linecap="round" fill="none"/><path d="M76 68 V46 M76 56 l9 -9 M76 52 l-8 -8" stroke="#FFA15A" stroke-width="6.5" stroke-linecap="round" fill="none"/><circle cx="38" cy="22" r="4" fill="#1FA6A6"/><circle cx="82" cy="30" r="3" fill="#7E57C2"/><circle cx="64" cy="14" r="3.5" fill="#fff" opacity=".8"/></svg>';
+  /* ONE treasure-chest design for all four chests: a wooden box with a curved lid, iron bands, studs, a glowing keyhole and small sparkles.
+     Only the big number badge (1-4) tells them apart. */
+  function chestSVG(n) {
+    n = [1, 2, 3, 4].includes(+n) ? +n : 1; const k = 'ch_' + n;
+    const body = '#8A5430', lid = '#B8773F', hi = '#D9A06A', iron = '#5F6572', ironHi = '#9AA1AE', line = '#3F2412';
+    const stud = (x, y) => `<circle cx="${x}" cy="${y}" r="1.9" fill="${ironHi}" stroke="${line}" stroke-width=".8"/>`;
+    return `<svg viewBox="0 0 100 84" class="chestsvg chest-n${n}" data-chest="${n}" aria-hidden="true"><defs>
+      <radialGradient id="${k}_g"><stop offset="0" stop-color="#FFF6B8"/><stop offset=".55" stop-color="#FFD84A" stop-opacity=".85"/><stop offset="1" stop-color="#FFD84A" stop-opacity="0"/></radialGradient>
+      <clipPath id="${k}_c"><path d="M12 42 Q12 8 50 8 Q88 8 88 42Z"/></clipPath></defs>
+      <ellipse cx="50" cy="77" rx="42" ry="4.5" fill="#2b254022"/>
+      <path d="M14 42 H86 V70 Q86 75 81 75 H19 Q14 75 14 70Z" fill="${body}" stroke="${line}" stroke-width="2.6" stroke-linejoin="round"/>
+      <path d="M16 54 H84 M16 64 H84 M40 44 V74 M60 44 V74" stroke="${line}" stroke-opacity=".25" stroke-width="1.4"/>
+      <rect x="22" y="43" width="9" height="31" fill="${iron}" stroke="${line}" stroke-width="1.6"/><rect x="69" y="43" width="9" height="31" fill="${iron}" stroke="${line}" stroke-width="1.6"/>
+      ${stud(26.5, 50)}${stud(26.5, 58)}${stud(26.5, 66)}${stud(73.5, 50)}${stud(73.5, 58)}${stud(73.5, 66)}
+      <path d="M14 70 v-6 h6 M86 70 v-6 h-6" fill="none" stroke="${iron}" stroke-width="3"/>
+      <path d="M12 42 Q12 8 50 8 Q88 8 88 42Z" fill="${lid}" stroke="${line}" stroke-width="2.6" stroke-linejoin="round"/>
+      <g clip-path="url(#${k}_c)"><path d="M32 8 Q30 26 32 44 M50 6 V44 M68 8 Q70 26 68 44" stroke="${line}" stroke-opacity=".22" stroke-width="1.4" fill="none"/>
+      <rect x="21" y="4" width="10" height="40" fill="${iron}" stroke="${line}" stroke-width="1.6"/><rect x="69" y="4" width="10" height="40" fill="${iron}" stroke="${line}" stroke-width="1.6"/>
+      <path d="M16 36 Q17 17 43 12" stroke="${hi}" stroke-width="3.2" stroke-linecap="round" fill="none" opacity=".85"/></g>
+      ${stud(26, 20)}${stud(26, 30)}${stud(74, 20)}${stud(74, 30)}
+      <rect x="10" y="38" width="80" height="9" rx="3" fill="${iron}" stroke="${line}" stroke-width="2.2"/>
+      <path d="M13 41.5 H87" stroke="${ironHi}" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="50" cy="52" r="17" fill="url(#${k}_g)"/>
+      <rect x="41.5" y="43" width="17" height="19" rx="4.5" fill="${ironHi}" stroke="${line}" stroke-width="2"/>
+      <circle cx="50" cy="51" r="3.1" fill="#3a2410"/><path d="M48.6 52 L51.4 52 L52.4 58 L47.6 58Z" fill="#3a2410"/>
+      <path class="sparkle" d="M86 4 L87.9 10.1 L94 12 L87.9 13.9 L86 20 L84.1 13.9 L78 12 L84.1 10.1Z" fill="#fff" stroke="#FFD84A" stroke-width="1.2" stroke-linejoin="round"/>
+      <path class="sparkle s2" d="M92 56 L93.1 59.4 L96.5 60.5 L93.1 61.6 L92 65 L90.9 61.6 L87.5 60.5 L90.9 59.4Z" fill="#fff" stroke="#FFD84A" stroke-width="1" stroke-linejoin="round"/>
+      <g class="numbadge"><circle cx="17" cy="17" r="14" fill="#E8553A" stroke="#fff" stroke-width="3"/><text x="17" y="24.5" text-anchor="middle" font-size="21" font-weight="800" fill="#fff" font-family="Andika, sans-serif">${n}</text></g>
+    </svg>`;
+  }
+  IR.chestSVG = chestSVG;
+  /* Little coral-reef island for the two Review Reefs: sandy top, teal water ring, branching corals, starfish and a shell. */
+  const branch = (x, y, col, h) => `<path d="M${x} ${y} v-${h} M${x} ${y - h * .55} l-9 -9 M${x} ${y - h * .75} l9 -8 M${x - 9} ${y - h * .55 - 9} l-4 -6 M${x + 9} ${y - h * .75 - 8} l4 -6" stroke="${col}" stroke-width="5.2" stroke-linecap="round" fill="none"/>`;
+  IR.reefSVG = () => `<svg viewBox="0 0 200 150" class="isvg reefsvg" aria-hidden="true">
+      <path d="M12 66 Q22 100 64 120 Q86 142 100 144 Q114 142 136 120 Q178 100 188 66Z" fill="url(#rock)"/>
+      <path d="M44 92 q8 12 20 20 M156 92 q-8 12 -20 20" stroke="#00000018" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <ellipse cx="100" cy="66" rx="88" ry="28" fill="#2FA3A8"/>
+      <ellipse cx="100" cy="62" rx="88" ry="27" fill="#5FD0CC"/>
+      <ellipse cx="100" cy="64" rx="64" ry="19" fill="#F1E1B2"/>
+      <ellipse cx="82" cy="56" rx="36" ry="7" fill="#ffffff44"/>
+      ${branch(62, 68, '#F58BA8', 30)}${branch(104, 72, '#E0457B', 40)}${branch(142, 66, '#FFA15A', 26)}
+      <path d="M124 66 l3 -8 l3 8 l8 1 l-6 5 l2 8 l-7 -4 l-7 4 l2 -8 l-6 -5z" fill="#FF8A5C" transform="translate(-24 4) scale(.9)"/>
+      <path d="M84 74 q8 -12 16 0z" fill="#FFF3E0" stroke="#d8c9a8" stroke-width="1.5" transform="translate(-14 -2)"/>
+      <circle cx="40" cy="58" r="3.4" fill="#fff" opacity=".8"/><circle cx="160" cy="54" r="2.6" fill="#fff" opacity=".8"/>
+    </svg>`;
 
 })();
