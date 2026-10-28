@@ -136,6 +136,7 @@
       h('label', { class: 'opt' }, calm, ' Calm motion (fish hold still, no wiggles)'),
       h('label', { class: 'opt' }, open, ' Open every lesson and the check (for testing)'),
       h('div', { class: 'row' }, hearNg, inst, reset),
+      IR.chest && IR.chest.checklist ? IR.chest.checklist() : null,
       h('p', { class: 'small' }, 'The app cannot listen to a child read. Reading aloud stays with a grown-up. Check the isolated ng sound by ear before sharing.')));
   }
 

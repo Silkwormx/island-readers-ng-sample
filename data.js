@@ -768,7 +768,6 @@ window.IR_DATA = {
   }
  },
  "dolch": [
-  "a",
   "and",
   "big",
   "blue",
@@ -857,5 +856,415 @@ window.IR_DATA = {
     "minutes": 6
    }
   }
- }
+ },
+ "fillin": [
+  {
+   "id": 1,
+   "pre": "I can",
+   "ans": "see",
+   "post": "you.",
+   "choices": [
+    "see",
+    "go",
+    "the"
+   ],
+   "text": "I can see you."
+  },
+  {
+   "id": 2,
+   "pre": "Can you",
+   "ans": "help",
+   "post": "me?",
+   "choices": [
+    "help",
+    "not",
+    "blue"
+   ],
+   "text": "Can you help me?"
+  },
+  {
+   "id": 3,
+   "pre": "Can",
+   "ans": "you",
+   "post": "help me?",
+   "choices": [
+    "you",
+    "in",
+    "is"
+   ],
+   "text": "Can you help me?"
+  },
+  {
+   "id": 4,
+   "pre": "We can",
+   "ans": "run",
+   "post": "and play.",
+   "choices": [
+    "run",
+    "big",
+    "the"
+   ],
+   "text": "We can run and play."
+  },
+  {
+   "id": 5,
+   "pre": "We can run",
+   "ans": "and",
+   "post": "jump.",
+   "choices": [
+    "and",
+    "in",
+    "red"
+   ],
+   "text": "We can run and jump."
+  },
+  {
+   "id": 6,
+   "pre": "I can",
+   "ans": "find",
+   "post": "it.",
+   "choices": [
+    "find",
+    "blue",
+    "for"
+   ],
+   "text": "I can find it."
+  },
+  {
+   "id": 7,
+   "pre": "It is",
+   "ans": "not",
+   "post": "little.",
+   "choices": [
+    "not",
+    "go",
+    "we"
+   ],
+   "text": "It is not little."
+  },
+  {
+   "id": 8,
+   "pre": "",
+   "ans": "We",
+   "post": "can play.",
+   "choices": [
+    "We",
+    "Is",
+    "In"
+   ],
+   "text": "We can play."
+  },
+  {
+   "id": 9,
+   "pre": "",
+   "ans": "Come",
+   "post": "here!",
+   "choices": [
+    "Come",
+    "Is",
+    "My"
+   ],
+   "text": "Come here!"
+  },
+  {
+   "id": 10,
+   "pre": "Look",
+   "ans": "down",
+   "post": "!",
+   "choices": [
+    "down",
+    "is",
+    "and"
+   ],
+   "text": "Look down!"
+  },
+  {
+   "id": 11,
+   "pre": "It is",
+   "ans": "big",
+   "post": ".",
+   "choices": [
+    "big",
+    "go",
+    "run"
+   ],
+   "text": "It is big."
+  },
+  {
+   "id": 12,
+   "pre": "It is",
+   "ans": "red",
+   "post": ".",
+   "choices": [
+    "red",
+    "go",
+    "in"
+   ],
+   "text": "It is red."
+  },
+  {
+   "id": 13,
+   "pre": "It is",
+   "ans": "blue",
+   "post": ".",
+   "choices": [
+    "blue",
+    "to",
+    "we"
+   ],
+   "text": "It is blue."
+  },
+  {
+   "id": 14,
+   "pre": "It is",
+   "ans": "little",
+   "post": ".",
+   "choices": [
+    "little",
+    "go",
+    "the"
+   ],
+   "text": "It is little."
+  },
+  {
+   "id": 15,
+   "pre": "I can",
+   "ans": "jump",
+   "post": ".",
+   "choices": [
+    "jump",
+    "the",
+    "red"
+   ],
+   "text": "I can jump."
+  },
+  {
+   "id": 16,
+   "pre": "I can",
+   "ans": "run",
+   "post": ".",
+   "choices": [
+    "run",
+    "in",
+    "little"
+   ],
+   "text": "I can run."
+  },
+  {
+   "id": 17,
+   "pre": "Is",
+   "ans": "it",
+   "post": "blue?",
+   "choices": [
+    "it",
+    "go",
+    "and"
+   ],
+   "text": "Is it blue?"
+  },
+  {
+   "id": 18,
+   "pre": "Is it",
+   "ans": "red",
+   "post": "?",
+   "choices": [
+    "red",
+    "we",
+    "in"
+   ],
+   "text": "Is it red?"
+  },
+  {
+   "id": 19,
+   "pre": "Come",
+   "ans": "and",
+   "post": "see.",
+   "choices": [
+    "and",
+    "is",
+    "in"
+   ],
+   "text": "Come and see."
+  },
+  {
+   "id": 20,
+   "pre": "Help",
+   "ans": "me",
+   "post": "!",
+   "choices": [
+    "me",
+    "the",
+    "go"
+   ],
+   "text": "Help me!"
+  },
+  {
+   "id": 21,
+   "pre": "See me",
+   "ans": "jump",
+   "post": "!",
+   "choices": [
+    "jump",
+    "and",
+    "the"
+   ],
+   "text": "See me jump!"
+  },
+  {
+   "id": 22,
+   "pre": "You can",
+   "ans": "go",
+   "post": "in.",
+   "choices": [
+    "go",
+    "and",
+    "red"
+   ],
+   "text": "You can go in."
+  },
+  {
+   "id": 23,
+   "pre": "It is for",
+   "ans": "me",
+   "post": ".",
+   "choices": [
+    "me",
+    "go",
+    "jump"
+   ],
+   "text": "It is for me."
+  },
+  {
+   "id": 24,
+   "pre": "Run",
+   "ans": "to",
+   "post": "me!",
+   "choices": [
+    "to",
+    "is",
+    "red"
+   ],
+   "text": "Run to me!"
+  },
+  {
+   "id": 25,
+   "pre": "It",
+   "ans": "is",
+   "post": "not big.",
+   "choices": [
+    "is",
+    "we",
+    "go"
+   ],
+   "text": "It is not big."
+  },
+  {
+   "id": 26,
+   "pre": "",
+   "ans": "It",
+   "post": "is red.",
+   "choices": [
+    "It",
+    "We",
+    "Go"
+   ],
+   "text": "It is red."
+  },
+  {
+   "id": 27,
+   "pre": "I can find",
+   "ans": "you",
+   "post": ".",
+   "choices": [
+    "you",
+    "the",
+    "and"
+   ],
+   "text": "I can find you."
+  },
+  {
+   "id": 28,
+   "pre": "Here I",
+   "ans": "go",
+   "post": "!",
+   "choices": [
+    "go",
+    "is",
+    "red"
+   ],
+   "text": "Here I go!"
+  },
+  {
+   "id": 29,
+   "pre": "Come and",
+   "ans": "play",
+   "post": ".",
+   "choices": [
+    "play",
+    "the",
+    "not"
+   ],
+   "text": "Come and play."
+  },
+  {
+   "id": 30,
+   "pre": "We can",
+   "ans": "play",
+   "post": ".",
+   "choices": [
+    "play",
+    "in",
+    "blue"
+   ],
+   "text": "We can play."
+  },
+  {
+   "id": 31,
+   "pre": "It is",
+   "ans": "for",
+   "post": "you.",
+   "choices": [
+    "for",
+    "in",
+    "go"
+   ],
+   "text": "It is for you."
+  },
+  {
+   "id": 32,
+   "pre": "You can go",
+   "ans": "in",
+   "post": ".",
+   "choices": [
+    "in",
+    "the",
+    "red"
+   ],
+   "text": "You can go in."
+  },
+  {
+   "id": 33,
+   "pre": "",
+   "ans": "Look",
+   "post": "here!",
+   "choices": [
+    "Look",
+    "The",
+    "In"
+   ],
+   "text": "Look here!"
+  },
+  {
+   "id": 34,
+   "pre": "",
+   "ans": "I",
+   "post": "can go.",
+   "choices": [
+    "I",
+    "In",
+    "Is"
+   ],
+   "text": "I can go."
+  }
+ ]
 };
