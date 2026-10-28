@@ -52,7 +52,7 @@
         bubble.append(h('b', { class: 'who' }, b.who === 'zip' ? 'Zip' : 'Frill'), h('p', null, pr.text),
           speakerBtn(() => playBeat(b), 'Hear this again'));
         zip.classList.toggle('speaking', b.who === 'zip'); frill.classList.toggle('speaking', b.who === 'frill');
-        visual.innerHTML = '';
+        visual.innerHTML = ''; wrap.classList.toggle('vowelstep', b.show === 'vowels' || b.show === 'swords');   /* tiles step: layout keeps Frill's bubble clear of the examples */
         if (b.show === 'apart') visual.append(ngPill(false));
         if (b.show === 'glue') { const p = ngPill(false); visual.append(p, h('p', { class: 'cap' }, 'n + g = one sound')); setTimeout(() => p.classList.add('joined'), 900); }
         if (b.show === 'say') visual.append(ngPill(true), h('button', { class: 'btn', type: 'button', onclick: () => Snd.play(A.ng) }, icon('speaker'), 'Hear it'));
@@ -91,7 +91,7 @@
           D.mixWords.forEach((w) => row.append(h('button', { class: 'chip', type: 'button', onclick: (e) => { e.currentTarget.classList.add('seen'); sayWord(w); } }, colorWord(w))));
           visual.append(row);
         }
-        if (b.show === 'go') visual.append(h('button', { class: 'btn ghost', type: 'button', onclick: () => IR.openCartoon() }, icon('play'), 'Watch the Zip and Frill cartoon (optional)'));
+        /* the optional cartoon button was removed from the lesson */
         nextBtn.firstChild.textContent = i === beats.length - 1 ? 'Story time' : 'Next';
         playBeat(b);
       }

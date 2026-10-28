@@ -798,5 +798,64 @@ window.IR_DATA = {
   "to",
   "we",
   "you"
- ]
+ ],
+ "minutes": {
+  "intro": 5,
+  "listen": 5,
+  "hear": 2,
+  "fish": 3,
+  "build": 3,
+  "trace": 4,
+  "sentence": 3,
+  "story": 6,
+  "check": 4
+ },
+ "cartoon": {
+  "src": "video/ng_cartoon_small.mp4",
+  "captions": "video/ng_cartoon_captions.json",
+  "poster": "img/island3_banner.jpg",
+  "title": "Zip and Frill: The Nose Hum",
+  "note": "Optional cartoon, 2 min 27 s. Captions highlight each word as it is spoken."
+ },
+ "islands": {
+  "i3": {
+   "units": [
+    {
+     "id": "ng",
+     "unitNo": 6,
+     "name": "ng",
+     "href": "#/island3",
+     "img": [
+      "zip"
+     ],
+     "ready": true,
+     "stars": 9
+    },
+    {
+     "id": "nk",
+     "unitNo": 7,
+     "name": "nk",
+     "href": null,
+     "img": [
+      "frill"
+     ],
+     "ready": false,
+     "stars": 9,
+     "minutes": 40
+    }
+   ],
+   "review": {
+    "id": "review",
+    "name": "Review",
+    "desc": "Mixed review: ng, nk and earlier skills",
+    "img": [
+     "zip",
+     "frill"
+    ],
+    "ready": false,
+    "stars": 1,
+    "minutes": 6
+   }
+  }
+ }
 };

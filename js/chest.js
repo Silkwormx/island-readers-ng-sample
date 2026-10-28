@@ -35,7 +35,7 @@
       h('button', { class: 'btn big back', type: 'button', 'aria-label': backLabel || 'Back', onclick: () => { Snd.stop(); location.hash = backHref; } }, icon('back'), 'Back'),
       h('button', { class: 'btn big next', type: 'button', 'aria-label': nextLabel || 'Next', onclick: () => { Snd.stop(); location.hash = nextHref; } }, 'Next', icon('next')));
     app.append(h('div', { class: 'screen lessonscreen chestscreen ' + (cls || ''), style: '--c:#A9693B' },
-      h('header', { class: 'lesson-top' }, x, h('div', { class: 'chest-title' }, h('span', { class: 'chestmini', html: IR.chestSVG(1) }), title), h('div', { class: 'pill star' }, icon('star'), h('b', null, IR.totalStars()))), h('div', { class: 'stage' }, body), nav));
+      h('header', { class: 'lesson-top' }, x, h('div', { class: 'chest-title' }, h('span', { class: 'chestmini', html: IR.chestSVG(1) }), title), IR.ui.homeButton()), h('div', { class: 'stage' }, body), nav));
   }
   function endCard(app, game, words, again) {       /* short, non-verbal praise: stars + a chime, no spoken words, never blocks anything */
     const idx = GAMES.findIndex((g) => g.id === game); const nxt = GAMES[idx + 1];
@@ -53,9 +53,9 @@
       h('span', { class: 'snum', 'aria-hidden': 'true' }, String(i + 1)), h('span', { class: 'sico', 'aria-hidden': 'true' }, icon('play')),
       h('span', { class: 'stxt' }, h('b', null, g.title), h('small', null, g.blurb)), h('span', { class: 'sside' }, h('span', { class: 'slabel' }, 'Play')))));
     const chips = h('div', { class: 'wordchips', 'aria-label': 'The 30 words' }, ...WORDS.map((w) => { const b = wordCard(w, 'mini'); b.addEventListener('click', () => IR.sayWord(w)); return b; }));
-    const x = h('button', { class: 'back', type: 'button', onclick: () => { location.hash = '#/home'; } }, icon('back'), 'World map');
+    const x = IR.ui.homeButton();
     app.append(h('div', { class: 'screen trailscreen unitpage chestmenu' },
-      h('header', { class: 'top2' }, x, IR.ui.chips(), IR.ui.gearButton()),
+      h('header', { class: 'top2' }, x, IR.ui.gearButton()),
       h('div', { class: 'unitwrap' },
         h('section', { class: 'unithero' }, h('div', { class: 'chestbig', html: IR.chestSVG(1) }), h('div', { class: 'ut-title' }, h('span', { class: 'ut-isle' }, 'Level 1 treasure'), h('h1', null, 'Treasure chest 1')),
           h('p', { class: 'small' }, '30 little words. Play the games as often as you like. They never hold anything up.')),
