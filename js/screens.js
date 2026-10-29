@@ -12,7 +12,7 @@
     { id: 'chest1', kind: 'chest', n: 1, title: 'Treasure chest 1', sub: 'Level 1 \u00b7 Word games', href: '#/chest1' },
     { id: 'i3', kind: 'island', n: 3, title: 'Glued Sounds', sub: 'ng, nk', href: '#/island3' },
     { id: 'i4', kind: 'island', n: 4, title: 'Silent e and Word Endings' },
-    { id: 'chest2', kind: 'chest', n: 2, title: 'Treasure chest 2', sub: 'Level 2' },
+    { id: 'chest2', kind: 'chest', n: 2, title: 'Treasure chest 2', sub: 'Level 2 \u00b7 Word games', href: '#/chest2' },
     { id: 'i5', kind: 'island', n: 5, title: 'Longer Words' }, { id: 'reef1', kind: 'reef', title: 'Review Reef', sub: 'After Island 5' },
     { id: 'i6', kind: 'island', n: 6, title: 'Bossy r' },
     { id: 'chest3', kind: 'chest', n: 3, title: 'Treasure chest 3', sub: 'Level 3' },
@@ -417,7 +417,7 @@
     app.innerHTML = ''; window.scrollTo(0, 0);
     let m;
     if ((m = /^#\/lesson\/(\d+)/.exec(hash))) lessonScreen(parseInt(m[1], 10) - 1);
-    else if (hash.startsWith('#/chest1')) IR.chest.render(hash, app);
+    else if (/^#\/chest[12]/.test(hash)) IR.chest.render(hash, app);
     else if (hash.startsWith('#/island3')) trailScreen();
     else if (hash.startsWith('#/check')) checkScreen();
     else if (hash.startsWith('#/result')) { IR.newScreen(); app.append(h('div', { class: 'screen resultscreen' })); IR.renderResult($('.resultscreen')); $('.resultscreen').prepend(h('div', { class: 'unitbar' }, homeButton(), unitButton('check'))); }

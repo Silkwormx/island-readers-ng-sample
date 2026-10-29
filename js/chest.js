@@ -1,9 +1,10 @@
-/* Level 1 wooden chest: a game menu with 10 games on the Dolch pre-primer words (D.dolch). Rounds are 6 to 10 words; every game can Keep going round after round. Replayable, never blocks progress, no timers, no scores to lose. */
+/* Treasure chests 1 and 2: one game menu with 10 games per chest, on that chest's 50 words (D.box1, D.box2). Rounds are 6 to 10 words; every game can Keep going round after round. Replayable, never blocks progress, no timers, no scores to lose. */
 (function () {
   'use strict';
   const IR = window.IR;
   const { D, h, $$, sleep, shuffle, icon, Snd, A } = IR;
-  const WORDS = D.dolch;
+  function make(N, WORDS, FILL, HEARTW, SOUNDW) {
+  const P = '#/chest' + N;
   const GAMES = [
     { id: 'flip', title: 'Flip and Match', blurb: 'Turn two cards. Find the pair.', icon: 'play' },
     { id: 'catch', title: 'Catch the Word', blurb: 'Hear a word. Catch it as it floats by.', icon: 'play' },
@@ -18,10 +19,10 @@
   ];
   /* Back/Next chain across all games: chest menu, 1 .. 6, chest menu */
   const navFor = (id) => { const i = GAMES.findIndex((g) => g.id === id); const pv = GAMES[i - 1], nx = GAMES[i + 1];
-    return { backHref: pv ? '#/chest1/' + pv.id : '#/chest1', backLabel: pv ? 'Back: ' + pv.title : 'Back to the chest', nextHref: nx ? '#/chest1/' + nx.id : '#/chest1', nextLabel: nx ? 'Next game: ' + nx.title : 'Next: back to the chest' }; };
+    return { backHref: pv ? P + '/' + pv.id : P, backLabel: pv ? 'Back: ' + pv.title : 'Back to the chest', nextHref: nx ? P + '/' + nx.id : P, nextLabel: nx ? 'Next game: ' + nx.title : 'Next: back to the chest' }; };
   const LETTERS = 'abcdefghijklmnopqrstuvwxyz'; const VOWELS = 'aeiou';
   const poolOf = (min, max) => WORDS.filter((w) => w.length >= min && w.length <= max && w !== 'I');
-  const state = () => { const S = IR.S(); if (!S.chest1) S.chest1 = { plays: {}, read: {} }; return S.chest1; };
+  const state = () => { const S = IR.S(); const k = 'chest' + N; if (!S[k]) S[k] = { plays: {}, read: {} }; return S[k]; };
   const taught = (w) => D.heart.some((x) => x.w === w) && (!!IR.S().heart[w] || IR.isDone('listen'));     /* heart words already taught show a star */
   /* Round words: every game walks through its own fixed shuffled order of the pool, n words at a time, so the words in one round are unique, each replay moves to the next n words, and the whole pool is used before any word comes round again. */
   const seeded = (str) => { let s = 0; for (const c of str) s = (s * 31 + c.charCodeAt(0)) >>> 0; return () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
@@ -37,7 +38,7 @@
     const st = state();
     const rows = WORDS.map((w) => { const cb = h('input', { type: 'checkbox', id: 'rd_' + w }); cb.checked = !!st.read[w]; cb.addEventListener('change', () => { st.read[w] = cb.checked; IR.save(); });
       return h('label', { class: 'rdrow', for: 'rd_' + w }, cb, h('span', { class: 'rdw' }, w), h('button', { class: 'btn small', type: 'button', 'aria-label': 'Hear ' + w, onclick: (e) => { e.preventDefault(); IR.sayWord(w); } }, icon('speaker'))); });
-    return h('details', { class: 'rdcheck' }, h('summary', null, 'Treasure chest 1: words read aloud (' + WORDS.length + ')'),
+    return h('details', { class: 'rdcheck' }, h('summary', null, 'Treasure chest ' + N + ': words read aloud (' + WORDS.length + ')'),
       h('p', { class: 'small' }, 'Optional. Ask the child to read each word aloud and tick the ones they read. Tap the speaker to hear a word.'), h('div', { class: 'rdlist' }, ...rows));
   }
 
@@ -65,19 +66,19 @@
 
   /* shared screen frame: X (back to chest), title, Back/Next footer */
   function frame(app, { title, backHref, nextHref, backLabel, nextLabel, body, cls }) {
-    const x = h('button', { class: 'xbtn', type: 'button', 'aria-label': 'Back to the chest', onclick: () => { location.hash = '#/chest1'; } }, icon('close'));
+    const x = h('button', { class: 'xbtn', type: 'button', 'aria-label': 'Back to the chest', onclick: () => { location.hash = P; } }, icon('close'));
     const nav = h('div', { class: 'lesson-nav' },
       h('button', { class: 'btn big back', type: 'button', 'aria-label': backLabel || 'Back', onclick: () => { Snd.stop(); location.hash = backHref; } }, icon('back'), 'Back'),
       h('button', { class: 'btn big next', type: 'button', 'aria-label': nextLabel || 'Next', onclick: () => { Snd.stop(); location.hash = nextHref; } }, 'Next', icon('next')));
     app.append(h('div', { class: 'screen lessonscreen chestscreen ' + (cls || ''), style: '--c:#A9693B' },
-      h('header', { class: 'lesson-top' }, x, h('div', { class: 'chest-title' }, h('span', { class: 'chestmini', html: IR.chestSVG(1) }), title), IR.ui.homeButton()), h('div', { class: 'stage' }, body), nav));
+      h('header', { class: 'lesson-top' }, x, h('div', { class: 'chest-title' }, h('span', { class: 'chestmini', html: IR.chestSVG(N) }), title), IR.ui.homeButton()), h('div', { class: 'stage' }, body), nav));
   }
   /* One play session of a game: tracks the round, keeps the words fresh, and runs "Keep going" (rounds follow each other until the child taps Stop or Home). Nothing here can block or take anything away. */
   function session(app, id, pool, n, gen) {
     const scr = IR.newScreen(); const S = { id, endless: !!keepNext[id], stopped: false, roundNo: 1, r: 0, last: [], extra: null };
     keepNext[id] = false; S.targets = gen ? gen() : rounds(id, n, pool);
     S.ok = () => scr.ok() && !S.stopped;
-    S.again = () => { location.hash = '#/chest1/' + id; route(); };
+    S.again = () => { location.hash = P + '/' + id; route(); };
     S.keep = () => { keepNext[id] = true; S.again(); };
     S.stopBtn = () => S.endless ? h('button', { class: 'btn small stopbtn', type: 'button', onclick: () => S.stop() }, icon('pause'), 'Stop') : null;
     S.head = () => h('div', { class: 'roundhead' }, h('p', { class: 'small' }, (S.noun || 'Word') + ' ' + (S.r + 1) + ' of ' + S.targets.length + (S.endless ? ' \u00b7 Round ' + S.roundNo : '')), S.stopBtn());
@@ -100,14 +101,14 @@
     const box = h('div', { class: 'complete chestdone' }, h('div', { class: 'cbox' }, IR.celebration(false),
       h('div', { class: 'bigstars', 'aria-hidden': 'true' }, ...[1, 2, 3].map((k) => icon('star', 'on k' + k))),
       h('div', { class: 'row' }, h('button', { class: 'btn big primary keepbtn', type: 'button', onclick: go(S.keep) }, icon('play'), 'Keep going'), h('button', { class: 'btn big', type: 'button', onclick: go(S.again) }, icon('replay'), 'Play again')),
-      h('div', { class: 'row' }, ...extra, h('button', { class: 'btn big next', type: 'button', onclick: () => { hw.stop(); location.hash = nxt ? '#/chest1/' + nxt.id : '#/chest1'; } }, nxt ? 'Next game' : 'Back to the chest', icon('next'))),
+      h('div', { class: 'row' }, ...extra, h('button', { class: 'btn big next', type: 'button', onclick: () => { hw.stop(); location.hash = nxt ? P + '/' + nxt.id : P; } }, nxt ? 'Next game' : 'Back to the chest', icon('next'))),
       hw.btn, hw.list));
     app.append(box); Snd.play(A.sfx.done);
   }
 
   /* ---- menu ---- */
   function menu(app) {
-    const cards = GAMES.map((g, i) => h('li', null, h('button', { class: 'stopcard gamestop', type: 'button', 'data-game': g.id, onclick: () => { location.hash = '#/chest1/' + g.id; }, 'aria-label': (i + 1) + '. ' + g.title + '. ' + g.blurb },
+    const cards = GAMES.map((g, i) => h('li', null, h('button', { class: 'stopcard gamestop', type: 'button', 'data-game': g.id, onclick: () => { location.hash = P + '/' + g.id; }, 'aria-label': (i + 1) + '. ' + g.title + '. ' + g.blurb },
       h('span', { class: 'snum', 'aria-hidden': 'true' }, String(i + 1)), h('span', { class: 'sico', 'aria-hidden': 'true' }, icon('play')),
       h('span', { class: 'stxt' }, h('b', null, g.title), h('small', null, g.blurb)), h('span', { class: 'sside' }, h('span', { class: 'slabel' }, 'Play')))));
     const chips = h('div', { class: 'wordchips', 'aria-label': 'The ' + WORDS.length + ' words' }, ...WORDS.map((w) => { const b = wordCard(w, 'mini'); b.addEventListener('click', () => IR.sayWord(w)); return b; }));
@@ -115,13 +116,13 @@
     app.append(h('div', { class: 'screen trailscreen unitpage chestmenu' },
       h('header', { class: 'top2' }, x, IR.ui.gearButton()),
       h('div', { class: 'unitwrap' },
-        h('section', { class: 'unithero' }, h('div', { class: 'chestbig', html: IR.chestSVG(1) }), h('div', { class: 'ut-title' }, h('span', { class: 'ut-isle' }, 'Level 1 treasure'), h('h1', null, 'Treasure chest 1')),
-          h('p', { class: 'small' }, WORDS.length + ' little words. Play the games as often as you like. They never hold anything up.')),
+        h('section', { class: 'unithero' }, h('div', { class: 'chestbig', html: IR.chestSVG(N) }), h('div', { class: 'ut-title' }, h('span', { class: 'ut-isle' }, 'Level ' + N + ' treasure'), h('h1', null, 'Treasure chest ' + N)),
+          h('p', { class: 'small' }, WORDS.length + ' words. Play the games as often as you like. They never hold anything up.')),
         h('section', { class: 'ugrp activities' }, h('h2', { class: 'ugrp-t' }, icon('play'), 'Games', h('small', null, 'Play as often as you like')), h('ol', { class: 'stoplist' }, ...cards)),
         h('section', { class: 'ugrp' }, h('h2', { class: 'ugrp-t' }, 'The words', h('small', null, 'A star means a heart word you learned. Tap a word to hear it.')), chips)),
       h('div', { class: 'lesson-nav trail-nav' },
         h('button', { class: 'btn big back', type: 'button', 'aria-label': 'Back to the world map', onclick: () => { location.hash = '#/home'; } }, icon('back'), 'Back'),
-        h('button', { class: 'btn big next', type: 'button', 'aria-label': 'Next: Flip and Match', onclick: () => { location.hash = '#/chest1/flip'; } }, 'Next', icon('next')))));
+        h('button', { class: 'btn big next', type: 'button', 'aria-label': 'Next: Flip and Match', onclick: () => { location.hash = P + '/flip'; } }, 'Next', icon('next')))));
   }
 
 
@@ -309,11 +310,9 @@
     frame(app, { title: 'Spell It', ...navFor('spell'), body: stage }); round();
   }
   /* ---- game 8: Word Sort (tap the group a word belongs to; the group pairs rotate every round) ---- */
-  const HEARTW = ['the', 'to', 'you', 'for', 'come', 'is'];                              /* heart words: part of the word is not sounded out the usual way */
-  const SOUNDW = ['and', 'big', 'can', 'in', 'it', 'not', 'red', 'run', 'jump', 'help'];  /* words a child can sound out */
   const SORT_BOARDS = [
-    { id: 'len', A: { name: '2 letters', words: WORDS.filter((w) => w.length === 2), key: 'two' }, B: { name: '4 or more letters', words: WORDS.filter((w) => w.length >= 4), key: 'four' }, ask: 'How many letters?' },
-    { id: 'heart', A: { name: 'Heart word', words: HEARTW, key: 'heart' }, B: { name: 'Sound it out', words: SOUNDW, key: 'sound' }, ask: 'Heart word or sound it out?' },
+    { id: 'len', A: { name: '2 or 3 letters', words: WORDS.filter((w) => w.length <= 3), key: 'two' }, B: { name: '5 or more letters', words: WORDS.filter((w) => w.length >= 5), key: 'four' }, ask: 'How many letters?' },
+    { id: 'heart', A: { name: 'Heart word (tricky part)', words: HEARTW, key: 'heart' }, B: { name: 'Sound it out', words: SOUNDW, key: 'sound' }, ask: 'Heart word or sound it out?' },
     { id: 'vowel', A: { name: 'Starts with a vowel', words: WORDS.filter((w) => /^[aeiouAEIOU]/.test(w)), key: 'vowel' }, B: { name: 'Starts with another letter', words: WORDS.filter((w) => !/^[aeiouAEIOU]/.test(w)), key: 'other' }, ask: 'What does it start with?' }
   ];
   const sortWords = () => { const k = state().plays.sort || 0; const b = SORT_BOARDS[k % SORT_BOARDS.length]; const visit = Math.floor(k / SORT_BOARDS.length);
@@ -342,9 +341,9 @@
   }
 
   /* ---- game 9: Sentence Fill-in (a short sentence is read to you with one word missing; tap the word that fits) ---- */
-  const FILL = () => D.fillin || [];
+  
   function sentenceGame(app) {
-    const S = session(app, 'sentence', FILL(), ROUND.sentence); S.noun = 'Sentence'; const stage = h('div', { class: 'activity fillact' }); const status = h('p', { class: 'status', 'aria-live': 'polite' }, '\u00a0');
+    const S = session(app, 'sentence', FILL, ROUND.sentence); S.noun = 'Sentence'; const stage = h('div', { class: 'activity fillact' }); const status = h('p', { class: 'status', 'aria-live': 'polite' }, '\u00a0');
     async function round() {
       const it = S.targets[S.r]; let locked = false; const cap = (x) => (it.pre ? x : x[0].toUpperCase() + x.slice(1)); const sq = 'audio/sq_' + it.id + '.mp3', sf = 'audio/sf_' + it.id + '.mp3';
       const spk = IR.speakerBtn(() => Snd.play(sq), 'Hear the sentence'); spk.classList.add('huge');
@@ -404,8 +403,17 @@
   let route = () => {};
   function render(hash, app) {
     route = () => { app.innerHTML = ''; render(location.hash, app); };
-    const m = /^#\/chest1\/(\w+)/.exec(hash); const g = m ? m[1] : null; if (g !== 'spell') spellPicked = null;
+    const m = new RegExp('^#/chest' + N + '/(\\w+)').exec(hash); const g = m ? m[1] : null; if (g !== 'spell') spellPicked = null;
     if (g === 'flip') flip(app); else if (g === 'catch') catchGame(app); else if (g === 'find') findGame(app); else if (g === 'pop') popGame(app); else if (g === 'build') buildGame(app); else if (g === 'missing') missingGame(app); else if (g === 'spell') spellGame(app); else if (g === 'sort') sortGame(app); else if (g === 'sentence') sentenceGame(app); else if (g === 'trace') traceGame(app); else { IR.newScreen(); menu(app); }
   }
-  IR.chest = { render, WORDS, GAMES, checklist, ROUND, rounds };
+  return { render, WORDS, GAMES, checklist, ROUND, rounds };
+  }
+  /* Word Sort "Heart word (tricky part)" vs "Sound it out" (fully decodable with skills through Island 3: short vowels, digraphs, blends, ng/nk). Words that fit neither cleanly (e.g. long vowel or r-controlled) stay out of that board. */
+  const H1 = ['of', 'give', 'live', 'put', 'some', 'were', 'know', 'other', 'people', 'water', 'word', 'walk', 'from'];
+  const S1 = ['an', 'as', 'ask', 'had', 'has', 'him', 'his', 'if', 'just', 'let', 'stop', 'them', 'then', 'thank', 'think', 'when'];
+  const H2 = ['again', 'any', 'could', 'every', 'once', 'through', 'great', 'goes', 'gave', 'read', 'means', 'years'];
+  const S2 = ['best', 'end', 'fast', 'its', 'men', 'man', 'much', 'off', 'set', 'sit', 'such', 'us', 'sing', 'things'];
+  const boxes = { 1: make(1, D.box1, D.fillin || [], H1, S1), 2: make(2, D.box2, D.fillin2 || [], H2, S2) };
+  IR.chests = boxes;
+  IR.chest = { render: (hash, app) => boxes[/^#\/chest2/.test(hash) ? 2 : 1].render(hash, app), checklist: () => h('div', null, boxes[1].checklist(), boxes[2].checklist()), WORDS: D.box1, GAMES: boxes[1].GAMES, ROUND: boxes[1].ROUND, rounds: boxes[1].rounds };
 })();
