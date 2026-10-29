@@ -845,3 +845,55 @@ body:not(.calm) .usheet{animation:ushup .22s ease-out}
  .chestdone .bigstars .ico{width:2.6rem;height:2.6rem}.chestdone .cbox{gap:.25rem}.chestdone .cbox .row{margin-top:.35rem;gap:.5rem}.chestdone .btn.big{padding:.55rem 1rem;min-height:3rem}
  .traceact .btn.big{padding:.5rem .7rem;font-size:1rem;white-space:nowrap}.traceact .spellrow{gap:.5rem}.traceask{font-size:.9rem}
 }
+
+/* pass 12: Story Time reads each page by itself, then offers Read again / Next page */
+.listenmode .story-ctl .btn.primary{min-height:4.4rem;font-size:1.25rem;padding:.6rem 1.6rem}
+.listenmode .story-ctl .story-tap{min-width:14rem}
+.listenmode .story-say{margin:.1rem 0;text-align:center}
+@media (max-width:480px){.listenmode .story-ctl{flex-wrap:wrap;justify-content:center}.listenmode .story-ctl .btn{flex:1 1 auto}.listenmode .story-ctl .btn.primary{padding:.5rem 1rem;font-size:1.15rem}.listenmode .story-ctl .story-prev{flex:0 0 auto}}
+.listenmode .story-nextpage.glow{animation:glow 1.6s ease-in-out infinite}.calm .listenmode .story-nextpage.glow{animation:none}
+
+/* pass 12b: Meet ng on phones: the mouth picture is never squeezed under the speech bubble (nothing shrinks into it; sizes follow the screen height) */
+.intro.mouthstep>*{flex-shrink:0}
+.intro.mouthstep .visual{justify-content:safe center;min-height:0}
+.intro.mouthstep .mouthpic svg{max-height:26vh}
+@media (max-width:480px) and (max-height:800px){
+ .intro:not(.vowelstep) .char{height:min(10.5vh,5.8rem)}
+ .intro.mouthstep .mouthpic svg{width:min(10.5rem,46vw)}
+ .intro:not(.vowelstep) .visual{min-height:0;margin-top:.3rem;gap:.5rem}
+ .intro:not(.vowelstep) .ngpill{font-size:4.4rem}
+}
+@media (max-width:480px) and (max-height:700px){
+ .intro:not(.vowelstep) .char{height:min(9vh,4.8rem)}
+ .intro.mouthstep .mouthpic svg{width:min(8.6rem,40vw)}.intro.mouthstep .mouthpic .cap{font-size:.95rem}
+ .intro:not(.vowelstep) .ngpill{font-size:3.6rem}
+ .intro:not(.vowelstep) .bubble{padding:.45rem .9rem}.intro:not(.vowelstep) .bubble p{font-size:1.1rem}
+}
+@media (max-width:480px){
+ .intro.mouthstep .char{height:min(8.5vh,4.8rem)}
+ .intro.mouthstep .mouthpic svg{width:min(9.5rem,42vw)}
+ .intro.mouthstep .mouthpic .cap{font-size:.95rem}
+}
+@media (max-width:480px) and (max-height:780px){
+ .intro.vowelstep .vtile{min-height:4.4rem}
+ .intro.vowelstep .vtile .vv,.intro.vowelstep .vtile .vng{font-size:2.1rem}
+ .intro.vowelstep .char{height:min(7.5vh,4.4rem)}
+ .intro.vowelstep .bubble p{font-size:1rem;line-height:1.25}
+ .intro.vowelstep .bubble{padding:.35rem .8rem}
+}
+@media (max-width:480px) and (max-height:760px){
+ .intro.mouthstep .char{height:min(6.5vh,3.6rem)}
+ .intro.mouthstep .mouthpic svg{width:min(8rem,36vw)}
+ .intro.mouthstep .bubble p{font-size:1.05rem;line-height:1.3}
+ .intro.mouthstep .intro-actions{margin:.1rem 0}
+}
+@media (max-width:480px) and (max-height:700px){
+ .intro.vowelstep .vtile{min-height:4rem}
+ .intro.vowelstep .char{height:min(6.5vh,3.8rem)}
+ .intro.vowelstep .vtiles{gap:.5rem}
+}
+
+/* pass 12c: Word Sort: every word box is the same size (the word card, and the chips that collect in the groups) */
+.sortcard{width:11rem;min-width:0;box-sizing:border-box}
+.sortbin .bchip{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:5.6rem;height:2.5rem;padding:0;font-size:1.05rem;white-space:nowrap}
+@media (max-width:480px){.sortcard{width:8.6rem}.sortbin .bchip{width:4.8rem;height:2.4rem;font-size:1rem}}
