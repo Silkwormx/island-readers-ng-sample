@@ -834,26 +834,27 @@ window.IR_DATA = {
      "id": "nk",
      "unitNo": 7,
      "name": "nk",
-     "href": null,
+     "href": "#/nk",
      "img": [
       "frill"
      ],
-     "ready": false,
-     "stars": 9,
+     "ready": true,
+     "stars": 11,
      "minutes": 40
     }
    ],
    "review": {
     "id": "review",
     "name": "Review",
-    "desc": "Mixed review: ng, nk and earlier skills",
+    "desc": "Mixed review: ng and nk",
     "img": [
      "zip",
      "frill"
     ],
-    "ready": false,
+    "ready": true,
     "stars": 1,
-    "minutes": 6
+    "minutes": 6,
+    "href": "#/review3"
    }
   }
  },

@@ -150,11 +150,11 @@
     let prevDone = true; let prev = null;
     list.forEach((u, i) => {
       if (u.id === 'ng') { const secs = unitSections(); u.total = secs.length; u.done = secs.filter((r) => r.done).length; u.min = secs.reduce((a, r) => a + r.min, 0); }
-      else { u.total = u.stars || 1; u.done = 0; u.min = u.minutes || 0; }       /* progress for the other units is wired up when their content exists */
+      else { const pr = IR.nkProgress && IR.nkProgress(u.id); if (pr) { u.total = pr.total; u.done = pr.done; u.min = pr.min; } else { u.total = u.stars || 1; u.done = 0; u.min = u.minutes || 0; } }       /* progress for the other units is wired up when their content exists */
       u.complete = u.ready && u.done >= u.total;
       const before = list.slice(0, i); const need = u.kind === 'review' ? before : (prev ? [prev] : []);
       const needDone = need.every((x) => x.complete);
-      u.state = !needDone ? 'locked' : !u.ready ? 'soon' : 'open';
+      u.state = !needDone && !IR.S().settings.openAll ? 'locked' : !u.ready ? 'soon' : 'open';
       u.lockMsg = !needDone ? (u.kind === 'review' ? 'Unlocks when ' + before.map((x) => x.name).join(' and ') + ' are done' : 'Unlocks when ' + prev.name + ' has all ' + prev.total + ' stars') : u.state === 'soon' ? 'Coming soon' : '';
       prev = u;
     });
@@ -169,12 +169,12 @@
     const stars = (u) => h('div', { class: 'dots', 'aria-hidden': 'true' }, ...Array.from({ length: u.total }, (_, k) => h('span', { class: 'sstar' + (k < u.done ? ' on' : '') }, icon('star'))));
     const cards = info.list.map((u) => {
       const title = u.kind === 'review' ? 'Review' : u.name;
-      const kind = u.kind === 'review' ? 'Island' : 'Unit ' + u.unitNo;
+      const kind = u.kind === 'review' ? 'Unit ' + w.n + ' Review' : 'Lesson ' + w.n + '.' + (info.list.indexOf(u) + 1);   /* naming standard: Unit 3 = Island 3; ng = Lesson 3.1, nk = Lesson 3.2 */
       const body = h('div', { class: 'ubody' }, h('div', { class: 'uk' }, kind), h('h2', null, title),
         h('div', { class: 'umin' }, u.min ? 'About ' + u.min + ' min' : ''), u.desc ? h('div', { class: 'rvd' }, u.desc) : null, stars(u),
         u.state === 'open' ? h('div', { class: 'uprog' }, u.done + ' of ' + u.total + ' stars') : h('div', { class: 'uprog lockmsg' }, icon('lock'), u.lockMsg));
       const card = h('div', { class: 'ucard ' + (u.state === 'open' ? 'open' : 'locked') + (u.kind === 'review' ? ' rv' : ''), 'data-unit': u.id, 'data-state': u.state, role: 'group',
-        'aria-label': (u.kind === 'review' ? 'Island Review' : 'Unit ' + u.unitNo + ': ' + u.name) + '. ' + (u.state === 'open' ? u.done + ' of ' + u.total + ' stars. Open.' : 'Locked. ' + u.lockMsg + '.') }, imgs(u), body);
+        'aria-label': (u.kind === 'review' ? 'Unit ' + w.n + ' Review' : 'Lesson ' + w.n + '.' + (info.list.indexOf(u) + 1) + ': ' + u.name) + '. ' + (u.state === 'open' ? u.done + ' of ' + u.total + ' stars. Open.' : 'Locked. ' + u.lockMsg + '.') }, imgs(u), body);
       if (u.state === 'open') {
         const b = h('button', { class: 'obtn', type: 'button', onclick: () => { modalRoot.innerHTML = ''; location.hash = u.href; } }, 'Open unit'); body.append(b);
         card.addEventListener('click', (e) => { if (e.target.closest('button')) return; b.click(); });
@@ -202,7 +202,7 @@
   function homeScreen() {
     const S = IR.S(); IR.newScreen();
     const head = h('header', { class: 'home-head' }, h('div', { class: 'logo' }, h('span', { class: 'logo-a' }, 'Island'), ' Readers'), IR.ui.gearButton());
-    const doneN = unitSections().filter((r) => r.done).length; const complete = unitComplete();
+    const doneN = unitSections().filter((r) => r.done).length; const complete = islandDone('i3');   /* Island 3 = ng + nk + Island Review */
     const map = h('div', { class: 'skymap', id: 'skymap' });
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'bridges'); svg.setAttribute('aria-hidden', 'true');
     map.append(svg);
@@ -251,6 +251,7 @@
     drawBridges(); window.addEventListener('resize', drawBridges);
     if (islandDone('i3')) map.append(h('div', { class: 'lit-note', style: `top:${pos.i3.y - 40}px;left:${pos.i3.xp}%` }, 'The way to Island 4 is lit!'));
     if (S.sticker) { const t = $('.island[data-id="i3"]', map); if (t) t.append(h('span', { class: 'sticker', 'aria-label': 'ng sticker earned' }, 'ng')); }
+    if (S.nkSticker) { const t = $('.island[data-id="i3"]', map); if (t) t.append(h('span', { class: 'sticker nksticker', 'aria-label': 'nk sticker earned' }, 'nk')); }
     // open scrolled so Island 3 (where Zip is) sits near the middle of the screen
     requestAnimationFrame(() => { const sc = $('.home'); if (sc) sc.scrollTop = Math.max(0, pos.i3.y - sc.clientHeight / 2 + sc.clientHeight * 0.3); });
   }
@@ -416,7 +417,8 @@
     const hash = location.hash || '#/home'; modalRoot.innerHTML = '';
     app.innerHTML = ''; window.scrollTo(0, 0);
     let m;
-    if ((m = /^#\/lesson\/(\d+)/.exec(hash))) lessonScreen(parseInt(m[1], 10) - 1);
+    if (IR.nkRoute && IR.nkRoute(hash, app)) { /* nk unit + Island Review (js/nk.js) */ }
+    else if ((m = /^#\/lesson\/(\d+)/.exec(hash))) lessonScreen(parseInt(m[1], 10) - 1);
     else if (/^#\/chest[12]/.test(hash)) IR.chest.render(hash, app);
     else if (hash.startsWith('#/island3')) trailScreen();
     else if (hash.startsWith('#/check')) checkScreen();
