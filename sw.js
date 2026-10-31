@@ -1,5 +1,7 @@
-/* Island Readers sample service worker: precache everything, serve offline, support media range requests. */
-const CACHE = 'ir-ng-sample-419ecd4654';
+/* Island Readers sample service worker.
+   Code (HTML/JS/CSS/data) is network-first so a new version always wins; the cache is only an offline fallback.
+   Media (images/audio/video) is cache-first. Install never fails because of one file. */
+const CACHE = 'ir-ng-sample-87bf87eb47';
 const ASSETS = [
  "./",
  "./index.html",
@@ -579,11 +581,14 @@ const ASSETS = [
  "./video/ng_cartoon_captions.json",
  "./video/ng_cartoon_small.mp4"
 ];
+const CORE = ASSETS.filter((a) => a === './' || /\.(html|js|css|json|webmanifest)$/.test(a));
+const isCode = (u) => u.pathname.endsWith('/') || /\.(html|js|css|json|webmanifest)$/.test(u.pathname);
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then((c) => Promise.allSettled(CORE.map((a) => fetch(a, { cache: 'reload' }).then((r) => { if (r.ok) return c.put(a, r); }))))
+    .then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', (e) => {
-  e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k.startsWith('ir-ng-sample-') && k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
+  e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
 });
 /* GitHub Pages serves .mp3 as "audio/mp3", which Safari does not accept for media: always answer with audio/mpeg */
 function fixMime(res, url) {
@@ -603,16 +608,24 @@ async function ranged(req, res) {
 self.addEventListener('fetch', (e) => {
   const req = e.request; if (req.method !== 'GET') return;
   const url = new URL(req.url); if (url.origin !== location.origin) return;
+  if (req.mode === 'navigate' || isCode(url)) {
+    e.respondWith((async () => {
+      try {
+        const net = await fetch(req, { cache: 'no-cache' });
+        if (net && net.ok) { const c = await caches.open(CACHE); c.put(req.mode === 'navigate' ? './index.html' : req, net.clone()); }
+        return net;
+      } catch (err) {
+        const hit = await caches.match(req.mode === 'navigate' ? './index.html' : req, { ignoreSearch: true });
+        if (hit) return hit; throw err;
+      }
+    })());
+    return;
+  }
   e.respondWith((async () => {
     const hit = await caches.match(req, { ignoreSearch: true });
     if (hit) return req.headers.has('range') ? ranged(req, hit) : fixMime(hit, url);
-    try {
-      const net = await fetch(req);
-      if (net && net.ok && !req.headers.has('range')) { const c = await caches.open(CACHE); c.put(req, net.clone()); }
-      return fixMime(net, url);
-    } catch (err) {
-      if (req.mode === 'navigate') { const idx = await caches.match('./index.html'); if (idx) return idx; }
-      throw err;
-    }
+    const net = await fetch(req);
+    if (net && net.ok && net.status === 200 && !req.headers.has('range')) { const c = await caches.open(CACHE); c.put(req, net.clone()); }
+    return fixMime(net, url);
   })());
 });
