@@ -73,7 +73,8 @@
       const st = h('span', { class: 'cstar', style: 'left:' + (4 + (i * 97 / n + (i % 3) * 3)) % 96 + '%;animation-delay:' + ((i % 7) * 0.12).toFixed(2) + 's;animation-duration:' + (2.2 + (i % 5) * 0.25).toFixed(2) + 's;color:' + cols[i % cols.length] + ';--s:' + (0.7 + (i % 4) * 0.22).toFixed(2) }, icon('star'));
       wrap.append(st);
     }
-    wrap.append(h('div', { class: 'dancers' }, h('img', { class: 'dz', src: 'img/zip.webp', alt: '' }), h('img', { class: 'df', src: 'img/frill.webp', alt: '' })));
+    const nu = /^#\/(lesson|check|result|island3)/.test(location.hash);   /* ng lesson: new Zip (A) and Frill (C) */
+    wrap.append(h('div', { class: 'dancers' }, h('img', { class: 'dz', src: nu ? 'img/zipA.webp' : 'img/zip.webp', alt: '' }), h('img', { class: 'df', src: nu ? 'img/frillC.webp' : 'img/frill.webp', alt: '' })));
     return wrap;
   }
 

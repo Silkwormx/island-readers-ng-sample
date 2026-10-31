@@ -23,8 +23,8 @@
       let i = 0;
       const bubble = h('div', { class: 'bubble' });
       const visual = h('div', { class: 'visual' });
-      const zip = h('img', { class: 'char zip', src: 'img/zip.webp', alt: 'Zip the gecko inventor' });
-      const frill = h('img', { class: 'char frill', src: 'img/frill.webp', alt: 'Frill the nudibranch' });
+      const zip = h('img', { class: 'char zip', src: 'img/zipA.webp', alt: 'Zip the gecko inventor' });
+      const frill = h('img', { class: 'char frill', src: 'img/frillC.webp', alt: 'Frill the nudibranch' });
       const nextBtn = h('button', { class: 'btn big next', type: 'button' }, 'Next', icon('next'));
       const backBtn = h('button', { class: 'btn big back', type: 'button', onclick: () => ctx.goBack() }, icon('back'), 'Back');   /* left of Next; step 1 -> the trail */
       ctx.showNav(false); ctx.setBack(() => { if (i > 0) { i--; show(); return true; } return false; });
@@ -117,14 +117,16 @@
         const seen = new Set();
         const go = h('button', { class: 'btn big primary', type: 'button' }, 'Listen to the story', icon('next'));
         const row = h('div', { class: 'hearts' });
+        const note = h('p', { class: 'heartnote', 'aria-live': 'polite' }, 'Most letters follow the rules. The colored part is the one to know by heart.');
         D.heart.forEach((it) => {
           row.append(h('button', { class: 'heartchip', type: 'button', onclick: (e) => {
             e.currentTarget.classList.add('seen'); seen.add(it.w); IR.S().heart[it.w] = true; IR.save(); ctx.progress(0.4 * seen.size / D.heart.length);
             Snd.seq([A.word(it.w), 'audio/hx_' + it.w + '.mp3'], 200);
-          } }, h('span', { class: 'heartmark', 'aria-hidden': 'true' }, '\u2665'), h('span', { class: 'word' }, it.w)));
+            note.textContent = (IR.SOR && IR.SOR.heart[it.w]) ? it.w + ': ' + IR.SOR.heart[it.w].note : '';
+          } }, h('span', { class: 'heartmark', 'aria-hidden': 'true' }, '\u2665'), IR.heartWord ? IR.heartWord(it.w) : h('span', { class: 'word' }, it.w)));
         });
         go.addEventListener('click', () => { Snd.stop(); storyListen(); });
-        stage.append(h('div', { class: 'activity' }, h('p', { class: 'bigprompt' }, 'Heart words'), row, h('div', { class: 'row center' }, go)));
+        stage.append(h('div', { class: 'activity' }, h('p', { class: 'bigprompt' }, 'Heart words'), note, row, h('div', { class: 'row center' }, go)));
       }
       /* part B: the comic, read aloud. Each page starts reading by itself the moment it opens (it is opened by a tap: "Listen to the story", "Next page" or "Read again", so iOS Safari allows the sound).
          When the page ends the child chooses "Read again" or "Next page". If the browser still blocks the sound, a big "Tap to hear this page" button appears (never a silent failure).

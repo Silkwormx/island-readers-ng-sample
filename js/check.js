@@ -28,7 +28,7 @@
         Snd.play(A.sfx.tap); const qq = q; await sleep(700); if (!ctx.scr.ok() || my !== qtoken || q !== qq) return; q++; step();
       };
       const body = h('div', { class: 'activity' });
-      if (it.silly) body.append(h('div', { class: 'sillytag' }, h('img', { src: 'img/zip.webp', alt: '' }), h('span', null, 'Zip\u2019s silly word!')));
+      if (it.silly) body.append(h('div', { class: 'sillytag' }, h('img', { src: 'img/zipA.webp', alt: '' }), h('span', null, 'Zip\u2019s silly word!')));
       if (it.type === 'pick') {
         const spk = speakerBtn(() => IR.sayWord(it.word), 'Hear the word'); spk.classList.add('huge');
         const grid = h('div', { class: 'choices' });
@@ -78,19 +78,21 @@
     const home = h('button', { class: 'btn big primary next', type: 'button', onclick: () => { location.hash = '#/home'; } }, 'See the sky map');
     const trail = h('button', { class: 'btn big back', type: 'button', onclick: () => { location.hash = '#/island3'; } }, icon('back'), 'Back to the trail');
     const again = h('button', { class: 'btn big next', type: 'button', onclick: () => { location.hash = '#/check'; } }, 'Try the check again');
-    if (score < 7) wrap.append(h('img', { class: 'char zip big', src: 'img/zip.webp', alt: 'Zip' }));
+    if (score < 7) wrap.append(h('img', { class: 'char zip big', src: 'img/zipA.webp', alt: 'Zip' }));
     if (score >= 9) {
-      wrap.append(h('div', { class: 'badgeart', html: IR.ICON.badge }),
-        h('h1', null, 'Island badge!'), h('p', { class: 'lead' }, IR.unitComplete() ? 'The bridge lights up!' : 'Get every star to light the bridge.'),
-        h('p', null, 'You got ' + score + ' out of 10. Your ng sticker is on the map.'),
-        h('div', { class: 'bridge-demo' }, h('i'), h('i'), h('i'), h('i'), h('i')),
+      wrap.append(h('div', { class: 'ob-bellhero ringing' }, h('img', { class: 'ob-scene', src: 'img/ob_cover_wide.jpg', alt: 'The big orange bell glows on the banyan tree' }), h('i', { class: 'ob-glow', 'aria-hidden': 'true' })),
+        h('p', { class: 'ob-kicker' }, 'Lesson 3.1 \u00b7 ' + score + ' of 10'),
+        h('h1', null, 'The bell rings!'), h('p', { class: 'lead' }, 'You read the glued sound ng. Ding, dong!'),
+        h('div', { class: 'ob-gem' }, h('img', { src: 'img/gem_03_amber.png', alt: 'Amber gem' }),
+          h('p', null, h('b', null, 'Amber gem: halfway there.'), ' Finish nk and the Unit 3 Review to put it in your gem box.')),
+        h('p', { class: 'small' }, 'Your ng sticker is on the map.'),
         h('div', { class: 'row' }, home, trail));
     } else if (score >= 7) {
-      wrap.append(h('h1', null, 'Review islet'), h('p', { class: 'lead' }, 'Good work! Let\u2019s practice a little more, then try again.'),
+      wrap.append(h('div', { class: 'ob-bellsmall' }, h('img', { src: 'img/bell_unlit.png', alt: '' })), h('h1', null, 'Almost ringing'), h('p', { class: 'lead' }, 'Good work! Practice a little more, then try again.'),
         h('p', null, 'You got ' + score + ' out of 10. Replay Hear and Pick or Build-a-Word, then take the check again.'),
         h('div', { class: 'row' }, trail, again));
     } else {
-      wrap.append(h('h1', null, 'Re-teach islet'), h('p', { class: 'lead' }, 'Thank you for trying! Let\u2019s learn ng again with a grown-up.'),
+      wrap.append(h('div', { class: 'ob-bellsmall' }, h('img', { src: 'img/bell_unlit.png', alt: '' })), h('h1', null, 'Let\u2019s go over it again'), h('p', { class: 'lead' }, 'Let\u2019s go over ng again with a grown-up.'),
         h('p', null, 'You got ' + score + ' out of 10. A grown-up can teach the ng sound again with you. Then you can start a fresh trail and try the check again.'),
         h('div', { class: 'row' }, trail, again));
     }

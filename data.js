@@ -1,260 +1,502 @@
 window.IR_DATA = {
  "heart": [
   {
-   "w": "I",
-   "ex": "I can sing."
-  },
-  {
-   "w": "to",
-   "ex": "Go to the pod."
-  },
-  {
-   "w": "what",
-   "ex": "What is it?"
-  },
-  {
-   "w": "is",
-   "ex": "It is a ring."
-  },
-  {
    "w": "the",
-   "ex": "The king sang."
+   "ex": "The bell is still."
   },
   {
    "w": "a",
-   "ex": "A long song."
+   "ex": "A long string."
+  },
+  {
+   "w": "is",
+   "ex": "It is stuck."
+  },
+  {
+   "w": "what",
+   "ex": "What is up?"
+  },
+  {
+   "w": "to",
+   "ex": "Frill swung up to the bell."
   }
  ],
  "story": [
   {
    "n": 1,
-   "img": "img/panel1.jpg",
-   "text": "Zip and Frill sing in the pod.",
+   "img": "img/ob_p1.jpg",
+   "text": "The big bell hung on a long, thick branch. It did not ring.",
+   "words": [
+    "The",
+    "big",
+    "bell",
+    "hung",
+    "on",
+    "a",
+    "long,",
+    "thick",
+    "branch.",
+    "It",
+    "did",
+    "not",
+    "ring."
+   ],
+   "t": [
+    [
+     0.107,
+     0.306
+    ],
+    [
+     0.32,
+     0.576
+    ],
+    [
+     0.59,
+     0.86
+    ],
+    [
+     0.874,
+     1.172
+    ],
+    [
+     1.186,
+     1.3
+    ],
+    [
+     1.314,
+     1.385
+    ],
+    [
+     1.399,
+     1.797
+    ],
+    [
+     2.024,
+     2.323
+    ],
+    [
+     2.337,
+     2.933
+    ],
+    [
+     3.92,
+     4.134
+    ],
+    [
+     4.148,
+     4.347
+    ],
+    [
+     4.361,
+     4.659
+    ],
+    [
+     4.673,
+     5.099
+    ]
+   ],
+   "dur": 6.14
+  },
+  {
+   "n": 2,
+   "img": "img/ob_p2.jpg",
+   "text": "Zip and Frill ran up the hill. What is up with the bell?",
+   "words": [
+    "Zip",
+    "and",
+    "Frill",
+    "ran",
+    "up",
+    "the",
+    "hill.",
+    "What",
+    "is",
+    "up",
+    "with",
+    "the",
+    "bell?"
+   ],
+   "t": [
+    [
+     0.107,
+     0.476
+    ],
+    [
+     0.49,
+     0.618
+    ],
+    [
+     0.632,
+     1.044
+    ],
+    [
+     1.059,
+     1.314
+    ],
+    [
+     1.328,
+     1.485
+    ],
+    [
+     1.499,
+     1.598
+    ],
+    [
+     1.613,
+     2.081
+    ],
+    [
+     3.082,
+     3.381
+    ],
+    [
+     3.395,
+     3.537
+    ],
+    [
+     3.551,
+     3.736
+    ],
+    [
+     3.75,
+     3.878
+    ],
+    [
+     3.892,
+     4.006
+    ],
+    [
+     4.02,
+     4.446
+    ]
+   ],
+   "dur": 5.47
+  },
+  {
+   "n": 3,
+   "img": "img/ob_p3.jpg",
+   "text": "Frill swung up to the bell on a long string.",
+   "words": [
+    "Frill",
+    "swung",
+    "up",
+    "to",
+    "the",
+    "bell",
+    "on",
+    "a",
+    "long",
+    "string."
+   ],
+   "t": [
+    [
+     0.107,
+     0.561
+    ],
+    [
+     0.576,
+     0.945
+    ],
+    [
+     0.959,
+     1.115
+    ],
+    [
+     1.13,
+     1.215
+    ],
+    [
+     1.229,
+     1.357
+    ],
+    [
+     1.371,
+     1.684
+    ],
+    [
+     1.698,
+     1.811
+    ],
+    [
+     1.826,
+     1.882
+    ],
+    [
+     1.897,
+     2.237
+    ],
+    [
+     2.252,
+     2.806
+    ]
+   ],
+   "dur": 3.84
+  },
+  {
+   "n": 4,
+   "img": "img/ob_p4.jpg",
+   "text": "Twigs and moss sat in the bell. Yuck!",
+   "words": [
+    "Twigs",
+    "and",
+    "moss",
+    "sat",
+    "in",
+    "the",
+    "bell.",
+    "Yuck!"
+   ],
+   "t": [
+    [
+     0.107,
+     0.533
+    ],
+    [
+     0.547,
+     0.647
+    ],
+    [
+     0.661,
+     0.987
+    ],
+    [
+     1.002,
+     1.272
+    ],
+    [
+     1.286,
+     1.357
+    ],
+    [
+     1.371,
+     1.456
+    ],
+    [
+     1.47,
+     1.925
+    ],
+    [
+     2.912,
+     3.636
+    ]
+   ],
+   "dur": 4.68
+  },
+  {
+   "n": 5,
+   "img": "img/ob_p5.jpg",
+   "text": "Zip and Frill flung the twigs and moss off the branch.",
+   "words": [
+    "Zip",
+    "and",
+    "Frill",
+    "flung",
+    "the",
+    "twigs",
+    "and",
+    "moss",
+    "off",
+    "the",
+    "branch."
+   ],
+   "t": [
+    [
+     0.107,
+     0.476
+    ],
+    [
+     0.49,
+     0.618
+    ],
+    [
+     0.632,
+     1.002
+    ],
+    [
+     1.016,
+     1.328
+    ],
+    [
+     1.343,
+     1.442
+    ],
+    [
+     1.456,
+     1.925
+    ],
+    [
+     1.939,
+     2.053
+    ],
+    [
+     2.067,
+     2.394
+    ],
+    [
+     2.408,
+     2.593
+    ],
+    [
+     2.607,
+     2.72
+    ],
+    [
+     2.735,
+     3.345
+    ]
+   ],
+   "dur": 4.39
+  },
+  {
+   "n": 6,
+   "img": "img/ob_p6.jpg",
+   "text": "Zip hit the bell with a ring thing. Ding!",
+   "words": [
+    "Zip",
+    "hit",
+    "the",
+    "bell",
+    "with",
+    "a",
+    "ring",
+    "thing.",
+    "Ding!"
+   ],
+   "t": [
+    [
+     0.107,
+     0.49
+    ],
+    [
+     0.505,
+     0.732
+    ],
+    [
+     0.746,
+     0.845
+    ],
+    [
+     0.86,
+     1.158
+    ],
+    [
+     1.172,
+     1.328
+    ],
+    [
+     1.343,
+     1.414
+    ],
+    [
+     1.428,
+     1.698
+    ],
+    [
+     1.712,
+     2.181
+    ],
+    [
+     3.182,
+     3.807
+    ]
+   ],
+   "dur": 4.82
+  },
+  {
+   "n": 7,
+   "img": "img/ob_p7.jpg",
+   "text": "Ding, dong. Just a bit. The bell is not strong yet.",
+   "words": [
+    "Ding,",
+    "dong.",
+    "Just",
+    "a",
+    "bit.",
+    "The",
+    "bell",
+    "is",
+    "not",
+    "strong",
+    "yet."
+   ],
+   "t": [
+    [
+     0.107,
+     0.59
+    ],
+    [
+     0.86,
+     1.399
+    ],
+    [
+     2.401,
+     2.784
+    ],
+    [
+     2.798,
+     2.883
+    ],
+    [
+     2.898,
+     3.338
+    ],
+    [
+     4.332,
+     4.517
+    ],
+    [
+     4.531,
+     4.815
+    ],
+    [
+     4.83,
+     4.972
+    ],
+    [
+     4.986,
+     5.27
+    ],
+    [
+     5.284,
+     5.653
+    ],
+    [
+     5.668,
+     6.108
+    ]
+   ],
+   "dur": 7.15
+  },
+  {
+   "n": 8,
+   "img": "img/ob_p8.jpg",
+   "text": "Zip and Frill sing a long song. The bell will ring and ring!",
    "words": [
     "Zip",
     "and",
     "Frill",
     "sing",
-    "in",
-    "the",
-    "pod."
-   ],
-   "t": [
-    [
-     0.107,
-     0.533
-    ],
-    [
-     0.547,
-     0.661
-    ],
-    [
-     0.675,
-     1.03
-    ],
-    [
-     1.044,
-     1.314
-    ],
-    [
-     1.328,
-     1.414
-    ],
-    [
-     1.428,
-     1.513
-    ],
-    [
-     1.527,
-     2.067
-    ]
-   ],
-   "dur": 3.1
-  },
-  {
-   "n": 2,
-   "img": "img/panel2.jpg",
-   "text": "Zip has a ring thing.",
-   "words": [
-    "Zip",
-    "has",
-    "a",
-    "ring",
-    "thing."
-   ],
-   "t": [
-    [
-     0.107,
-     0.519
-    ],
-    [
-     0.533,
-     0.746
-    ],
-    [
-     0.76,
-     0.845
-    ],
-    [
-     0.86,
-     1.13
-    ],
-    [
-     1.144,
-     1.613
-    ]
-   ],
-   "dur": 2.66
-  },
-  {
-   "n": 3,
-   "img": "img/panel3.jpg",
-   "text": "It can sing a long song!",
-   "words": [
-    "It",
-    "can",
-    "sing",
     "a",
     "long",
-    "song!"
-   ],
-   "t": [
-    [
-     0.107,
-     0.32
-    ],
-    [
-     0.334,
-     0.533
-    ],
-    [
-     0.547,
-     0.831
-    ],
-    [
-     0.845,
-     0.902
-    ],
-    [
-     0.916,
-     1.257
-    ],
-    [
-     1.272,
-     1.826
-    ]
-   ],
-   "dur": 2.86
-  },
-  {
-   "n": 4,
-   "img": "img/panel4.jpg",
-   "text": "Frill sang a long, long song!",
-   "words": [
-    "Frill",
-    "sang",
-    "a",
-    "long,",
-    "long",
-    "song!"
-   ],
-   "t": [
-    [
-     0.107,
-     0.519
-    ],
-    [
-     0.533,
-     0.803
-    ],
-    [
-     0.817,
-     0.888
-    ],
-    [
-     0.902,
-     1.3
-    ],
-    [
-     1.57,
-     1.882
-    ],
-    [
-     1.897,
-     2.422
-    ]
-   ],
-   "dur": 3.46
-  },
-  {
-   "n": 5,
-   "img": "img/panel5.jpg",
-   "text": "Bang! Clang! The ring thing is stuck!",
-   "words": [
-    "Bang!",
-    "Clang!",
+    "song.",
     "The",
+    "bell",
+    "will",
     "ring",
-    "thing",
-    "is",
-    "stuck!"
+    "and",
+    "ring!"
    ],
    "t": [
     [
      0.107,
-     0.732
+     0.519
     ],
     [
-     1.705,
-     2.372
+     0.533,
+     0.647
     ],
     [
-     3.338,
-     3.537
-    ],
-    [
-     3.551,
-     3.821
-    ],
-    [
-     3.835,
-     4.091
-    ],
-    [
-     4.105,
-     4.233
-    ],
-    [
-     4.247,
-     4.801
-    ]
-   ],
-   "dur": 5.83
-  },
-  {
-   "n": 6,
-   "img": "img/panel6.jpg",
-   "text": "Zip flung the ring up, up, up!",
-   "words": [
-    "Zip",
-    "flung",
-    "the",
-    "ring",
-    "up,",
-    "up,",
-    "up!"
-   ],
-   "t": [
-    [
-     0.107,
-     0.505
-    ],
-    [
-     0.519,
-     0.888
-    ],
-    [
-     0.902,
+     0.661,
      1.016
     ],
     [
@@ -263,190 +505,82 @@ window.IR_DATA = {
     ],
     [
      1.3,
-     1.556
+     1.371
     ],
     [
-     1.811,
-     2.067
+     1.385,
+     1.726
     ],
     [
-     2.351,
-     2.791
+     1.74,
+     2.266
+    ],
+    [
+     3.267,
+     3.466
+    ],
+    [
+     3.48,
+     3.75
+    ],
+    [
+     3.764,
+     3.963
+    ],
+    [
+     3.977,
+     4.332
+    ],
+    [
+     4.347,
+     4.489
+    ],
+    [
+     4.503,
+     4.972
     ]
    ],
-   "dur": 3.84
-  },
-  {
-   "n": 7,
-   "img": "img/panel7.jpg",
-   "text": "Frill swung up to get the ring.",
-   "words": [
-    "Frill",
-    "swung",
-    "up",
-    "to",
-    "get",
-    "the",
-    "ring."
-   ],
-   "t": [
-    [
-     0.107,
-     0.547
-    ],
-    [
-     0.561,
-     0.916
-    ],
-    [
-     0.931,
-     1.087
-    ],
-    [
-     1.101,
-     1.215
-    ],
-    [
-     1.229,
-     1.442
-    ],
-    [
-     1.456,
-     1.57
-    ],
-    [
-     1.584,
-     2.024
-    ]
-   ],
-   "dur": 3.07
-  },
-  {
-   "n": 8,
-   "img": "img/panel8.jpg",
-   "text": "Zip is glad! What a strong Frill!",
-   "words": [
-    "Zip",
-    "is",
-    "glad!",
-    "What",
-    "a",
-    "strong",
-    "Frill!"
-   ],
-   "t": [
-    [
-     0.107,
-     0.448
-    ],
-    [
-     0.462,
-     0.604
-    ],
-    [
-     0.618,
-     1.215
-    ],
-    [
-     2.202,
-     2.486
-    ],
-    [
-     2.5,
-     2.571
-    ],
-    [
-     2.585,
-     3.054
-    ],
-    [
-     3.068,
-     3.58
-    ]
-   ],
-   "dur": 4.61
-  },
-  {
-   "n": 9,
-   "img": "img/panel9.jpg",
-   "text": "Ding, dong! I sing a long song!",
-   "words": [
-    "Ding,",
-    "dong!",
-    "I",
-    "sing",
-    "a",
-    "long",
-    "song!"
-   ],
-   "t": [
-    [
-     0.107,
-     0.561
-    ],
-    [
-     0.817,
-     1.357
-    ],
-    [
-     2.344,
-     2.528
-    ],
-    [
-     2.543,
-     2.841
-    ],
-    [
-     2.855,
-     2.912
-    ],
-    [
-     2.926,
-     3.267
-    ],
-    [
-     3.281,
-     3.835
-    ]
-   ],
-   "dur": 4.87
+   "dur": 6.0
   }
  ],
  "sentences": [
   {
    "n": 1,
-   "img": "img/panel2.jpg",
-   "text": "Zip has a ring thing.",
+   "img": "img/ob_p1.jpg",
+   "text": "The bell hung on a branch.",
    "words": [
-    "Zip",
-    "has",
+    "The",
+    "bell",
+    "hung",
+    "on",
     "a",
-    "ring",
-    "thing."
+    "branch."
    ]
   },
   {
    "n": 2,
-   "img": "img/panel4.jpg",
-   "text": "Frill sang a long song.",
+   "img": "img/ob_p3.jpg",
+   "text": "Frill swung up to the bell.",
    "words": [
     "Frill",
-    "sang",
-    "a",
-    "long",
-    "song."
+    "swung",
+    "up",
+    "to",
+    "the",
+    "bell."
    ]
   },
   {
    "n": 3,
-   "img": "img/panel6.jpg",
-   "text": "Zip flung the ring up.",
+   "img": "img/ob_p8.jpg",
+   "text": "Zip and Frill sing a song.",
    "words": [
     "Zip",
-    "flung",
-    "the",
-    "ring",
-    "up."
+    "and",
+    "Frill",
+    "sing",
+    "a",
+    "song."
    ]
   }
  ],
@@ -497,6 +631,97 @@ window.IR_DATA = {
    ]
   }
  ],
+ "dolch": [
+  "and",
+  "big",
+  "blue",
+  "can",
+  "come",
+  "down",
+  "find",
+  "for",
+  "go",
+  "help",
+  "here",
+  "I",
+  "in",
+  "is",
+  "it",
+  "jump",
+  "little",
+  "look",
+  "me",
+  "my",
+  "not",
+  "play",
+  "red",
+  "run",
+  "see",
+  "the",
+  "to",
+  "we",
+  "you"
+ ],
+ "minutes": {
+  "intro": 6,
+  "listen": 3,
+  "hear": 2,
+  "bells": 2,
+  "build": 4,
+  "trace": 3,
+  "sentence": 3,
+  "story": 6,
+  "check": 4
+ },
+ "cartoon": {
+  "src": "video/ng_cartoon_small.mp4",
+  "captions": "video/ng_cartoon_captions.json",
+  "poster": "img/island3_banner.jpg",
+  "title": "Zip and Frill: The Nose Hum",
+  "note": "Optional cartoon, 2 min 27 s. Captions highlight each word as it is spoken."
+ },
+ "islands": {
+  "i3": {
+   "units": [
+    {
+     "id": "ng",
+     "unitNo": 6,
+     "name": "ng",
+     "href": "#/island3",
+     "img": [
+      "zip"
+     ],
+     "ready": true,
+     "stars": 9
+    },
+    {
+     "id": "nk",
+     "unitNo": 7,
+     "name": "nk",
+     "href": "#/nk",
+     "img": [
+      "frill"
+     ],
+     "ready": true,
+     "stars": 11,
+     "minutes": 40
+    }
+   ],
+   "review": {
+    "id": "review",
+    "name": "Review",
+    "href": "#/review3",
+    "desc": "Mixed review: ng and nk",
+    "img": [
+     "zip",
+     "frill"
+    ],
+    "ready": true,
+    "stars": 1,
+    "minutes": 6
+   }
+  }
+ },
  "fish": {
   "ng": [
    "king",
@@ -514,6 +739,13 @@ window.IR_DATA = {
   ],
   "need": 5
  },
+ "bells": [
+  "ring",
+  "bang",
+  "sing",
+  "gong",
+  "clang"
+ ],
  "build": [
   {
    "word": "sing",
@@ -672,7 +904,7 @@ window.IR_DATA = {
  "prompts": {
   "i1": {
    "voice": "Zip",
-   "text": "Hi, friends! Today we find a glued sound."
+   "text": "Today we learn a glued sound."
   },
   "i2": {
    "voice": "Frill",
@@ -744,7 +976,39 @@ window.IR_DATA = {
   },
   "p_listen2": {
    "voice": "Frill",
-   "text": "Now listen to the story. Just follow along with your eyes. You do not have to read yet!"
+   "text": "Now listen to the story. Follow along with your eyes."
+  },
+  "p_bells": {
+   "voice": "Frill",
+   "text": "Read the word out loud. Then tap the bell with the same word."
+  },
+  "sor_ears": {
+   "voice": "Frill",
+   "text": "Ears only. Listen to the sounds. Which word do they make?"
+  },
+  "sor_seg": {
+   "voice": "Frill",
+   "text": "Listen to the word. Tap one box for each sound you hear."
+  },
+  "sor_review": {
+   "voice": "Frill",
+   "text": "Quick review. Say the sound out loud, then tap the card to check."
+  },
+  "sor_spell": {
+   "voice": "Frill",
+   "text": "Hear it, spell it. Listen, then tap the letters in order."
+  },
+  "sor_break": {
+   "voice": "Frill",
+   "text": "Quick break. Breathe in slowly. Now breathe out. Let's do it again."
+  },
+  "sor_q1": {
+   "voice": "Frill",
+   "text": "Who swung up to the bell on a string?"
+  },
+  "sor_q2": {
+   "voice": "Frill",
+   "text": "What was stuck in the bell?"
   },
   "p_check": {
    "voice": "Zip",
@@ -765,97 +1029,6 @@ window.IR_DATA = {
   "humprompt": {
    "voice": "Frill",
    "text": "Hum it again!"
-  }
- },
- "dolch": [
-  "and",
-  "big",
-  "blue",
-  "can",
-  "come",
-  "down",
-  "find",
-  "for",
-  "go",
-  "help",
-  "here",
-  "I",
-  "in",
-  "is",
-  "it",
-  "jump",
-  "little",
-  "look",
-  "me",
-  "my",
-  "not",
-  "play",
-  "red",
-  "run",
-  "see",
-  "the",
-  "to",
-  "we",
-  "you"
- ],
- "minutes": {
-  "intro": 5,
-  "listen": 5,
-  "hear": 2,
-  "fish": 3,
-  "build": 3,
-  "trace": 4,
-  "sentence": 3,
-  "story": 6,
-  "check": 4
- },
- "cartoon": {
-  "src": "video/ng_cartoon_small.mp4",
-  "captions": "video/ng_cartoon_captions.json",
-  "poster": "img/island3_banner.jpg",
-  "title": "Zip and Frill: The Nose Hum",
-  "note": "Optional cartoon, 2 min 27 s. Captions highlight each word as it is spoken."
- },
- "islands": {
-  "i3": {
-   "units": [
-    {
-     "id": "ng",
-     "unitNo": 6,
-     "name": "ng",
-     "href": "#/island3",
-     "img": [
-      "zip"
-     ],
-     "ready": true,
-     "stars": 9
-    },
-    {
-     "id": "nk",
-     "unitNo": 7,
-     "name": "nk",
-     "href": "#/nk",
-     "img": [
-      "frill"
-     ],
-     "ready": true,
-     "stars": 11,
-     "minutes": 40
-    }
-   ],
-   "review": {
-    "id": "review",
-    "name": "Review",
-    "desc": "Mixed review: ng and nk",
-    "img": [
-     "zip",
-     "frill"
-    ],
-    "ready": true,
-    "stars": 1,
-    "minutes": 6,
-    "href": "#/review3"
-   }
   }
  },
  "fillin": [

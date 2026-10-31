@@ -7,7 +7,7 @@
 
   /* ---------- 6. Trace Trail: numbered green start dots, direction arrows, "watch me", forward-only tracing ---------- */
   LESSONS.push({
-    id: 'trace', title: 'Trace Trail', blurb: 'Trace n and g: follow the green dots', color: '#D98E00',
+    id: 'trace', title: 'Trace Trail', blurb: 'Optional: trace n and g', color: '#D98E00',
     run(ctx) {
       ctx.setInstr('Trace the n and the g. Start at the green dot.', 'p_trace');
       const W = 900, H = 440, BRUSH = 30, NS = 'http://www.w3.org/2000/svg';
@@ -68,7 +68,7 @@
       }
       function snapPath(s, color) { ictx.strokeStyle = color; ictx.lineWidth = BRUSH; ictx.lineCap = 'round'; ictx.lineJoin = 'round'; ictx.beginPath(); s.pts.forEach((p, i) => (i ? ictx.lineTo(p[0], p[1]) : ictx.moveTo(p[0], p[1]))); ictx.stroke(); }
       async function succeed() {
-        if (finished) return; finished = true; refresh(); status.textContent = 'Beautiful tracing!';
+        if (finished) return; finished = true; refresh(); status.textContent = 'Nice, clean letters.';
         await IR.ding(); if (ctx.scr.ok()) ctx.finish();
       }
       function strokeDone() {
@@ -178,7 +178,7 @@
       const next = h('button', { class: 'btn small primary next', type: 'button' }, 'Next', icon('next'));
       const allBtn = h('button', { class: 'btn small', type: 'button' }, icon('play'), 'Play the whole story');
       const reads = h('div', { class: 'reads' });
-      const readBtn = h('button', { class: 'btn small good', type: 'button' }, icon('check'), 'I read it to a grown-up');
+      const readBtn = h('button', { class: 'btn small good', type: 'button' }, icon('check'), 'I read it aloud');
       function renderReads() {
         const n = S.reads.story || 0; reads.innerHTML = '';
         reads.append(h('span', null, 'Read it 3 times: '), ...[0, 1, 2].map((k) => h('i', { class: 'rd' + (k < n ? ' on' : '') })));
