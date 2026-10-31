@@ -1129,7 +1129,8 @@ body.calm .ob-glow{animation:none;opacity:.85}
 }
 /* phone fix v2: let the document scroll, never shrink activity rows */
 @media (max-width:700px){
-  html,body{height:auto!important;min-height:100%;overflow-y:auto!important}
+  html:has(.unitpage.unitA),body:has(.unitpage.unitA){height:auto!important;min-height:100%;overflow-y:auto!important}
+  body:has(.unitpage.unitA) #app{height:auto!important;min-height:100vh}
   body:has(.unitpage.unitA) #app,body:has(.unitpage.unitA) main#app{height:auto!important;overflow:visible!important}
   .unitpage.unitA{height:auto!important;min-height:100vh;overflow:visible!important;display:block!important}
   .unitpage .uA-main{height:auto!important;max-height:none!important;padding-bottom:6rem}

@@ -441,10 +441,15 @@
   IR.applySettings();
   route();
   window.addEventListener('error', (e) => { window.__irErrors = (window.__irErrors || []).concat(String(e.message)); });
-  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
-    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then((r) => r.update()).catch(() => {}));
-    /* when a new version takes over, reload once so old and new files never mix */
-    let hadCtl = !!navigator.serviceWorker.controller, reloaded = false;
-    navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadCtl && !reloaded) { reloaded = true; location.reload(); } hadCtl = true; });
-  }
+  /* service worker is optional: the app renders without it */
+  try {
+    if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+      const hadCtl = !!navigator.serviceWorker.controller;
+      window.addEventListener('load', () => { try { navigator.serviceWorker.register('sw.js').then((r) => r.update()).catch(() => {}); } catch (e) {} });
+      /* reload once, only when an older version was in control */
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        try { if (!hadCtl || sessionStorage.getItem('ir-sw-reloaded')) return; sessionStorage.setItem('ir-sw-reloaded', '1'); location.reload(); } catch (e) {}
+      });
+    }
+  } catch (e) {}
 })();

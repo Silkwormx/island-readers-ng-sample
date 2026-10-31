@@ -1,7 +1,7 @@
 /* Island Readers sample service worker.
    Code (HTML/JS/CSS/data) is network-first so a new version always wins; the cache is only an offline fallback.
    Media (images/audio/video) is cache-first. Install never fails because of one file. */
-const CACHE = 'ir-ng-sample-87bf87eb47';
+const CACHE = 'ir-ng-sample-f83d9d4d66';
 const ASSETS = [
  "./",
  "./index.html",
@@ -611,12 +611,12 @@ self.addEventListener('fetch', (e) => {
   if (req.mode === 'navigate' || isCode(url)) {
     e.respondWith((async () => {
       try {
-        const net = await fetch(req, { cache: 'no-cache' });
+        const net = await fetch(req.mode === 'navigate' ? req : new Request(req.url, { cache: 'no-cache', credentials: 'same-origin' }));
         if (net && net.ok) { const c = await caches.open(CACHE); c.put(req.mode === 'navigate' ? './index.html' : req, net.clone()); }
         return net;
       } catch (err) {
-        const hit = await caches.match(req.mode === 'navigate' ? './index.html' : req, { ignoreSearch: true });
-        if (hit) return hit; throw err;
+        const hit = (await caches.match(req, { ignoreSearch: true })) || (req.mode === 'navigate' ? await caches.match('./index.html') : null);
+        if (hit) return hit; return Response.error();
       }
     })());
     return;
