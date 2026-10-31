@@ -1101,3 +1101,43 @@ body.calm .ob-glow{animation:none;opacity:.85}
 .orangepick .home{border-color:#B5510D;box-shadow:0 5px 0 #B5510D}
 .ngpill .n{color:#C95A10}
 .orangepick .obtn{box-shadow:0 6px 0 #B5510D}
+
+/* ---------- phone fix (Oct 31 2026): unit pages scroll instead of squeezing; calm activity rows ---------- */
+.orangeunit .cartoonpill,.orangeunit .uA-time{display:none}
+.ob-meta{display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding:0 .8rem .6rem;font-weight:700;color:var(--ink2);font-size:.95rem}
+.ob-cartoon{display:inline-flex;align-items:center;gap:.35rem;border:2px solid #E8731C;color:#B5510D;background:#fff;border-radius:2rem;padding:.25rem .9rem;font-weight:700;font-size:.95rem}
+.arow.nextup .stxt::after{content:'Next up';display:block;font-size:.8rem;font-weight:700;color:#C95A10;letter-spacing:.04em}
+.arow .slabel.tag{display:none}
+.arow.nextup{border-color:#E8731C!important;background:#FFF6EC}
+@media (max-width:700px){
+  .unitpage.unitA{display:block;overflow-y:auto;height:100%}
+  .unitpage .uA-top{position:sticky;top:0;z-index:5}
+  .unitpage .uA-main{display:flex;flex-direction:column;gap:1rem;padding:.9rem .9rem 1.2rem;min-height:0;height:auto}
+  .unitpage .uA-left{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+  .unitpage .bigbox{min-height:7.5rem}
+  .unitpage .uA-right{gap:.6rem}
+  .unitpage .uA-h{font-size:.9rem}
+  .unitpage .uA-acts{display:flex;flex-direction:column;gap:.6rem}
+  .unitpage .uA-acts>li{display:block}
+  .unitpage .arow{min-height:3.8rem;max-height:none;height:auto;padding:.55rem .9rem;gap:.75rem;border-radius:1.1rem;border-width:3px}
+  .unitpage .arow .snum{width:2.1rem;height:2.1rem;font-size:1rem;border-width:2px}
+  .unitpage .arow .stxt b{font-size:1.05rem;white-space:normal;line-height:1.25}
+  .unitpage .arow .smin{font-size:.85rem}
+  .unitpage .arow .sstar{width:1.5rem;height:1.5rem}
+  .unitpage .uA-foot{position:sticky;bottom:0;padding:.6rem 1rem}
+  .unitpage .uA-foot .i4txt small,.unitpage .uA-foot .i4count{font-size:.95rem}
+}
+/* phone fix v2: let the document scroll, never shrink activity rows */
+@media (max-width:700px){
+  html,body{height:auto!important;min-height:100%;overflow-y:auto!important}
+  body:has(.unitpage.unitA) #app,body:has(.unitpage.unitA) main#app{height:auto!important;overflow:visible!important}
+  .unitpage.unitA{height:auto!important;min-height:100vh;overflow:visible!important;display:block!important}
+  .unitpage .uA-main{height:auto!important;max-height:none!important;padding-bottom:6rem}
+  .unitpage .uA-main>*,.unitpage .uA-right,.unitpage .uA-acts,.unitpage .uA-acts>li{flex:0 0 auto!important;height:auto!important;max-height:none!important;min-height:auto;overflow:visible!important;position:static}
+  .unitpage .uA-acts{display:flex!important;flex-direction:column;grid-template-rows:none!important}
+  .unitpage .uA-acts>li>.arow,.unitpage .arow{position:relative;flex:0 0 auto!important;min-height:3.8rem!important}
+  .unitpage .uA-foot{position:fixed!important;left:0;right:0;bottom:0;z-index:20}
+  .unitpage .uA-top{position:sticky;top:0;z-index:20}
+}
+.bigbox.lessonstop{background:#FFE9D6!important}
+@media (max-width:700px){.screen.unitpage.unitA{position:relative!important;inset:auto!important;height:auto!important;min-height:100vh}}

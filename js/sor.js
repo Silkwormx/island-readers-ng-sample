@@ -44,7 +44,8 @@
 
   const playSounds = async (list) => { Snd.stop(); const id = Snd.id; for (const s of list) { if (Snd.id !== id) return; await Snd.play(SND[s], { keep: true }); if (Snd.id !== id) return; await sleep(420); } };
 
-  /* ---------- warm-up: Ears only (4 items) then Quick review (5 cards) ---------- */
+  /* ---------- warm-up: Quick review only. The Ears-only items were removed Oct 31 2026 (the isolated sound audio was not good enough). ---------- */
+  SOR.ears = [];
   function warmup(ctx, done) {
     const stage = ctx.stage; let step = 0; const N = SOR.ears.length + 1;
     ctx.showNav(true);
